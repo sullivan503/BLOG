@@ -149,25 +149,31 @@ const Library: React.FC<LibraryProps> = ({ posts, isLoading, onNavigate }) => {
 
         {/* Knowledge Tab (List View remains better for courses) */}
         {!isLoading && activeTab === 'knowledge' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          <div className="space-y-6 max-w-4xl mx-auto">
             {knowledge.length > 0 ? (
               knowledge.map((item) => (
                 <div
                   key={item.id}
                   onClick={() => onNavigate(`post/${item.slug}`)}
-                  className="bg-white p-6 rounded-xl border border-gray-100 hover:border-accent/30 hover:shadow-lg transition-all group shadow-sm cursor-pointer"
+                  className="group flex flex-col p-6 bg-white border border-gray-100 rounded-xl hover:shadow-lg hover:border-accent/30 cursor-pointer transition-all duration-300 relative overflow-hidden"
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-primary font-bold text-lg group-hover:text-accent transition-colors flex items-center">
-                      <Brain size={18} className="mr-2 text-accent" />
-                      {item.title}
-                    </h3>
-                    <span className="text-xs font-mono bg-gray-100 text-secondary px-2 py-1 rounded">Course</span>
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+
+                  <div className="flex items-center space-x-3 text-xs mb-3">
+                    <span className="text-accent font-mono font-bold">{item.date}</span>
+                    {item.categories?.slice(0, 1).map(c => (
+                      <span key={c} className="bg-surface border border-gray-200 px-2 py-0.5 rounded text-secondary font-bold">{c}</span>
+                    ))}
                   </div>
-                  <div
-                    className="text-secondary text-sm leading-relaxed line-clamp-3 prose prose-sm prose-slate max-w-none"
-                    dangerouslySetInnerHTML={{ __html: item.excerpt || item.content }}
-                  />
+
+                  <h3 className="text-xl font-bold text-primary group-hover:text-accent transition-colors font-serif mb-3 flex items-center">
+                    <Brain size={18} className="mr-2 text-accent" />
+                    {item.title}
+                  </h3>
+
+                  <p className="text-secondary text-sm leading-relaxed line-clamp-2">
+                    {item.excerpt.replace(/<[^>]+>/g, '')}
+                  </p>
                 </div>
               ))
             ) : (

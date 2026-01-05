@@ -12,7 +12,15 @@ const formatPost = (post: any): BlogPost => {
     imageUrl = post._embedded['wp:featuredmedia'][0].source_url;
   }
 
-  // Priority 3: Default placeholder
+  // Priority 3: Extract first image from content (User Request)
+  if (!imageUrl && post.content && post.content.rendered) {
+    const contentImgMatch = post.content.rendered.match(/<img[^>]+src="([^">]+)"/);
+    if (contentImgMatch && contentImgMatch[1]) {
+      imageUrl = contentImgMatch[1];
+    }
+  }
+
+  // Priority 4: Default placeholder
   if (!imageUrl) {
     imageUrl = 'https://picsum.photos/seed/wp/800/400';
   }

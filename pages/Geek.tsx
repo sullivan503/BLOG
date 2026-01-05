@@ -420,28 +420,39 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                     </div>
                 )}
 
-                {/* ENGINEERING TAB (New) */}
-                {activeTab === 'engineering' && (
-                    <div className="space-y-8">
+                {/* ENGINEERING TAB (New) - Standard List Layout */}
+                {(activeTab === 'engineering' || activeTab === 'tech') && (
+                    <div className="space-y-8 animate-fade-in">
                         <div className="flex items-center mb-6">
                             <Terminal className="text-accent mr-3" size={24} />
-                            <h2 className="text-2xl font-bold text-primary font-serif">技术笔记 (Engineering Notes)</h2>
+                            <h2 className="text-2xl font-bold text-primary font-serif">
+                                {activeTab === 'engineering' ? '技术笔记 (Engineering Notes)' : '技术与装备 (Gear & Notes)'}
+                            </h2>
                         </div>
                         {techPosts.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {techPosts.map(post => (
-                                    <div key={post.id} className="bg-white p-6 rounded-xl border border-gray-100 hover:border-accent/30 hover:shadow-lg transition-all cursor-pointer group" onClick={() => onNavigate(`post/${post.slug}`)}>
-                                        <div className="flex justify-between items-start mb-4">
-                                            <span className="text-xs font-mono text-accent bg-accent/5 px-2 py-1 rounded">TECH</span>
-                                            <span className="text-xs text-gray-400">{post.date}</span>
-                                        </div>
-                                        <h3 className="text-lg font-bold text-primary mb-2 group-hover:text-accent transition-colors">{post.title}</h3>
-                                        <p className="text-sm text-secondary line-clamp-2 mb-4">{post.excerpt}</p>
-                                        <div className="flex space-x-2">
-                                            {post.tags.map(tag => (
-                                                <span key={tag} className="text-[10px] bg-gray-50 text-gray-500 px-1.5 py-0.5 rounded border border-gray-100">#{tag}</span>
+                            <div className="space-y-6 max-w-4xl mx-auto">
+                                {techPosts.map((post) => (
+                                    <div
+                                        key={post.id}
+                                        onClick={() => onNavigate(`post/${post.slug}`)}
+                                        className="group flex flex-col p-6 bg-white border border-gray-100 rounded-xl hover:shadow-lg hover:border-accent/30 cursor-pointer transition-all duration-300 relative overflow-hidden"
+                                    >
+                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+
+                                        <div className="flex items-center space-x-3 text-xs mb-3">
+                                            <span className="text-accent font-mono font-bold">{post.date}</span>
+                                            {post.tags?.slice(0, 1).map(tag => (
+                                                <span key={tag} className="bg-surface border border-gray-200 px-2 py-0.5 rounded text-secondary font-bold">{tag}</span>
                                             ))}
                                         </div>
+
+                                        <h3 className="text-xl font-bold text-primary group-hover:text-accent transition-colors font-serif mb-3">
+                                            {post.title}
+                                        </h3>
+
+                                        <p className="text-secondary text-sm leading-relaxed line-clamp-2">
+                                            {post.excerpt}
+                                        </p>
                                     </div>
                                 ))}
                             </div>
