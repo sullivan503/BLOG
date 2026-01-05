@@ -28,10 +28,17 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
     };
 
     // Check if this is a "Product/Review" type post (Books, Games, Media)
-    const isGame = post.categories?.some(c => ['games', '游戏'].some(k => c.toLowerCase().includes(k)));
-    const isBook = post.categories?.some(c => ['books', '书架'].some(k => c.toLowerCase().includes(k)));
-    const isMedia = post.categories?.some(c => ['media', '影音'].some(k => c.toLowerCase().includes(k)));
-    const isReviewType = isGame || isBook || isMedia;
+    // Broadened checks to catch "Library", "Reading", "Collections" etc.
+    const isGame = post.categories?.some(c => ['game', '游戏'].some(k => c.toLowerCase().includes(k)));
+    const isBook = post.categories?.some(c => ['book', 'read', 'library', '书', '阅读'].some(k => c.toLowerCase().includes(k)));
+    const isMedia = post.categories?.some(c => ['media', 'movie', 'film', '影音'].some(k => c.toLowerCase().includes(k)));
+
+    // Layout Logic:
+    // 1. Amazon Layout: Books & Media (Vertical Cover + Side Info)
+    // 2. Cinema Layout: Games (Hero Image + Top Info)
+    // 3. Standard Layout: Blog Posts
+    const isAmazonLayout = isBook || isMedia;
+    const isGameLayout = isGame;
 
     // Determine Type Icon
     let TypeIcon = Star;
@@ -56,22 +63,79 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                 {backLabel}
             </button>
 
-            {/* CONDITIONAL LAYOUT */}
+            {/* --- LAYOUT 1: CINEMA STYLE (GAMES) --- */}
+            {isGameLayout && (
+                <div className="mb-12">
+                    {/* Hero Image */}
+                    <div className="rounded-xl overflow-hidden shadow-2xl mb-8 border border-gray-900/5 aspect-video relative group">
+                        <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-8">
+                            <div className="text-white">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="bg-accent text-white px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">GAME</span>
+                                    {post.acf?.platform && (
+                                        <span className="bg-white/20 backdrop-blur-md px-2 py-0.5 rounded text-xs font-mono border border-white/30">
+                                            {Array.isArray(post.acf.platform) ? post.acf.platform[0] : post.acf.platform}
+                                        </span>
+                                    )}
+                                </div>
+                                <h1 className="font-serif text-4xl md:text-5xl font-bold mb-2 shadow-sm">{post.title}</h1>
+                                {/* Rating */}
+                                <div className="flex items-center space-x-2">
+                                    <div className="flex">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star
+                                                key={i}
+                                                size={20}
+                                                fill={i < Math.floor((post.acf?.rating || post.rating) || 0) ? "#fbbf24" : "none"}
+                                                className={i < Math.floor((post.acf?.rating || post.rating) || 0) ? "text-yellow-400" : "text-gray-400"}
+                                            />
+                                        ))}
+                                    </div>
+                                    <span className="font-bold text-yellow-400 font-mono text-xl">{post.acf?.rating || post.rating || '0'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            {isReviewType ? (
-                /* --- AMAZON / DOUBAN STYLE LAYOUT FOR REVIEWS --- */
+                    {/* AI Summary Bar */}
+                    <div className="bg-surface border-l-4 border-accent p-6 rounded-r-xl shadow-sm mb-12">
+                        <div className="flex justify-between items-start mb-2">
+                            <div className="flex items-center text-accent font-bold uppercase tracking-widest text-xs">
+                                <Sparkles size={14} className="mr-2" />
+                                AI Brief
+                            </div>
+                            {!summary && (
+                                <button
+                                    onClick={handleGenerateSummary}
+                                    disabled={isGenerating}
+                                    className="text-[10px] bg-white text-accent border border-accent/30 px-3 py-1 rounded-full hover:bg-accent hover:text-white transition-all disabled:opacity-50 font-bold"
+                                >
+                                    {isGenerating ? 'Analyzing...' : 'Generate'}
+                                </button>
+                            )}
+                        </div>
+                        <p className="text-primary text-sm leading-relaxed italic opacity-80">
+                            "{summary || post.excerpt}"
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* --- LAYOUT 2: AMAZON STYLE (BOOKS / MEDIA) --- */}
+            {isAmazonLayout && (
                 <div className="mb-12">
                     <div className="flex flex-col md:flex-row gap-8 items-start">
-                        {/* Left: Product Image */}
-                        <div className="w-full md:w-56 flex-shrink-0">
-                            <div className="rounded-lg overflow-hidden shadow-lg border border-gray-100 relative bg-gray-50 aspect-[3/4] md:aspect-auto">
+                        {/* Left: Product Image (Vertical) */}
+                        <div className="w-full md:w-56 flex-shrink-0 mx-auto md:mx-0 max-w-[200px] md:max-w-none">
+                            <div className="rounded-lg overflow-hidden shadow-xl border-4 border-white bg-gray-50 aspect-[2/3] relative transform hover:-rotate-1 transition-transform duration-300">
                                 <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
                             </div>
                         </div>
 
                         {/* Right: Info Header */}
-                        <div className="flex-grow w-full">
-                            <div className="flex flex-wrap gap-2 mb-3">
+                        <div className="flex-grow w-full text-center md:text-left">
+                            <div className="flex flex-wrap gap-2 mb-3 justify-center md:justify-start">
                                 {post.tags.map(tag => (
                                     !tag.match(/^\d/) && (
                                         <span key={tag} className="bg-surface text-secondary px-2 py-0.5 rounded text-xs font-mono border border-gray-200">
@@ -81,20 +145,20 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                                 ))}
                             </div>
 
-                            <h1 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-2 leading-tight flex items-center">
+                            <h1 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-2 leading-tight flex items-center justify-center md:justify-start">
                                 <TypeIcon className="mr-3 text-accent hidden md:block" size={32} />
                                 {post.title}
                             </h1>
 
-                            <div className="flex items-center text-sm text-secondary mb-6 space-x-4 border-b border-gray-100 pb-4">
-                                <span className="font-bold text-primary">{post.author}</span>
-                                <span>|</span>
+                            <div className="flex items-center justify-center md:justify-start text-sm text-secondary mb-6 space-x-4 border-b border-gray-100 pb-4">
+                                {post.acf?.creator && <span className="font-bold text-primary">{post.acf.creator}</span>}
+                                {post.acf?.creator && <span>|</span>}
                                 <span>{post.date}</span>
                             </div>
 
                             {/* Rating if available */}
-                            {((post.acf?.rating || post.rating) && (post.acf?.rating || post.rating || 0) > 0) && (
-                                <div className="flex items-center mb-6">
+                            {((post.acf?.rating || post.rating) || 0) > 0 && (
+                                <div className="flex items-center mb-6 justify-center md:justify-start">
                                     <div className="flex mr-3">
                                         {[...Array(5)].map((_, i) => (
                                             <Star
@@ -111,7 +175,7 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                             )}
 
                             {/* AI Summary embedded in right column */}
-                            <div className="bg-surface border border-gray-100 rounded-lg p-5 relative">
+                            <div className="bg-surface border border-gray-100 rounded-lg p-5 relative text-left">
                                 <div className="flex justify-between items-start mb-2">
                                     <div className="flex items-center text-accent font-bold text-xs uppercase tracking-wide">
                                         <Sparkles size={14} className="mr-1.5" />
@@ -141,8 +205,10 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                         </div>
                     </div>
                 </div>
-            ) : (
-                /* --- STANDARD BLOG LAYOUT FOR ESSAYS --- */
+            )}
+
+            {/* --- LAYOUT 3: STANDARD BLOG LAYOUT --- */}
+            {(!isGameLayout && !isAmazonLayout) && (
                 <>
                     {/* Post Header */}
                     <header className="mb-12 text-center max-w-2xl mx-auto">
