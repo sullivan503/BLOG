@@ -45,17 +45,23 @@ const Library: React.FC<LibraryProps> = ({ posts, isLoading, onNavigate }) => {
   // Helper to render a group of items (Notion style grouping)
   const renderGroup = (title: string, items: BlogPost[], type: 'book' | 'media') => {
     if (items.length === 0) return null;
+
+    // Grid columns: Books (Vertical) = 5 cols; Media (Horizontal) = 3 cols (Netflix Style)
+    const gridClass = type === 'book'
+      ? "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6"
+      : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+
     return (
       <div className="mb-12 animate-fade-in">
         <div className="flex items-center mb-4 border-b border-gray-100 pb-2">
-          <span className={`text-xs font-mono px-2 py-0.5 rounded mr-2 ${title.includes('5') ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600'}`}>
+          <span className={`text-xs font-mono px-2 py-0.5 rounded mr-2 ${title.includes('5') || title.includes('Masterpiece') || title.includes('精选') ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600'}`}>
             {items.length}
           </span>
           <h3 className="font-bold text-primary text-lg flex items-center">
             {title}
           </h3>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        <div className={gridClass}>
           {items.map(item => (
             <GalleryCard
               key={item.id}

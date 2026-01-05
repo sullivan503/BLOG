@@ -198,7 +198,7 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                         {title}
                     </h3>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {items.map(item => (
                         <GalleryCard
                             key={item.id}
@@ -208,7 +208,7 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                         />
                     ))}
                 </div>
-            </div>
+            </div >
         );
     };
 
