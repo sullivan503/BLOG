@@ -113,30 +113,26 @@ const Home: React.FC<HomeProps> = ({ posts, onNavigate, isLoading }) => {
 
             {/* --- SECTION 2: LATEST THINKING (STREAM) --- */}
             {/* 减少为展示 3 篇 */}
-            <section>
-                <div className="flex justify-between items-end mb-10 pb-4 border-b border-gray-100">
+            <section className="mb-24">
+                <div className="flex items-end justify-between mb-10">
                     <div>
-                        <h2 className="text-2xl font-bold font-serif text-primary flex items-center mb-1">
-                            <Sparkles size={20} className="mr-3 text-accent" />
-                            最新思考 (Latest)
-                        </h2>
-                        <p className="text-sm text-secondary">沉淀下来的文字，多关于技术与商业的交汇点。</p>
+                        <span className="text-accent font-mono text-xs font-bold tracking-widest uppercase mb-2 block">The Stream</span>
+                        <h2 className="font-serif text-3xl font-bold text-primary">Latest Thoughts</h2>
                     </div>
-                    <button onClick={() => onNavigate('essays')} className="hidden md:flex text-sm text-primary font-bold hover:text-accent items-center transition-colors group border border-gray-200 px-4 py-2 rounded-full hover:border-accent">
-                        View Archive <ArrowRight size={16} className="ml-2 transform group-hover:translate-x-1 transition-transform" />
+                    <button onClick={() => onNavigate('essays')} className="group text-sm font-bold text-secondary hover:text-accent flex items-center transition-colors">
+                        View Archive <ArrowRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
                     </button>
                 </div>
 
                 {isLoading ? (
-                    <div className="space-y-6">
-                        {[1, 2, 3].map(i => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {[1, 2, 3, 4, 5, 6].map(i => ( // Adjusted for 2-column layout, showing 6 placeholders
                             <div key={i} className="h-40 bg-surface rounded-xl animate-pulse"></div>
                         ))}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {homeStreamPosts.length > 0 ? (
-                            // CHANGED: Slice limited to 3 posts
                             homeStreamPosts.slice(0, 3).map((post) => (
                                 <PostCard key={post.id} post={post} onClick={(slug) => onNavigate(`post/${slug}`)} />
                             ))
