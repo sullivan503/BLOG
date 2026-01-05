@@ -13,8 +13,8 @@ export const BLOG_DESCRIPTION = "构建数字花园，在无序的世界里寻�
 export const WORDPRESS_API_URL = "https://api.fengwz.me";
 
 // Contact Form 7 IDs (请确保在 WP 后台创建了对应的表单)
-export const WP_CONTACT_FORM_ID = "34";
-export const WP_NEWSLETTER_FORM_ID = "40";
+export const WP_CONTACT_FORM_ID = "16";
+export const WP_NEWSLETTER_FORM_ID = "18";
 
 // ==============================================================================
 // 2. PROFILE & SOCIAL (个人信息与社交)

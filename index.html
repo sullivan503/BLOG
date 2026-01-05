@@ -1,83 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Feng's Blog</title>
-    
-    <!-- Google Tag Manager -->
-    <!-- TODO: Replace GTM-XXXXXXX with your actual GTM Container ID -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
-    <!-- End Google Tag Manager -->
 
-    <!-- Keeping Tailwind CDN for simplicity in this template, strictly for production we'd recommend PostCSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              serif: ['Merriweather', 'serif'],
-            },
-            colors: {
-              background: '#ffffff', // pure white
-              surface: '#f3f4f6', // gray-100 (light grey for cards)
-              surfaceHighlight: '#e5e7eb', // gray-200
-              primary: '#111827', // gray-900 (Deep black for text)
-              secondary: '#4b5563', // gray-600 (Medium grey for subtext)
-              accent: '#b91c1c', // red-700 (Classic deep red)
-              accentHover: '#991b1b', // red-800
-            },
-            animation: {
-              'fade-in': 'fadeIn 0.5s ease-out',
-            },
-            keyframes: {
-              fadeIn: {
-                '0%': { opacity: '0', transform: 'translateY(10px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              }
-            },
-            typography: (theme) => ({
-              DEFAULT: {
-                css: {
-                  color: theme('colors.primary'),
-                  a: {
-                    color: theme('colors.accent'),
-                    '&:hover': {
-                      color: theme('colors.accentHover'),
-                    },
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feng's Blog</title>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-53HR1S9ZH5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-53HR1S9ZH5');
+  </script>
+
+  <!-- Keeping Tailwind CDN for simplicity in this template, strictly for production we'd recommend PostCSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Merriweather', 'serif'],
+          },
+          colors: {
+            background: '#ffffff', // pure white
+            surface: '#f3f4f6', // gray-100 (light grey for cards)
+            surfaceHighlight: '#e5e7eb', // gray-200
+            primary: '#111827', // gray-900 (Deep black for text)
+            secondary: '#4b5563', // gray-600 (Medium grey for subtext)
+            accent: '#b91c1c', // red-700 (Classic deep red)
+            accentHover: '#991b1b', // red-800
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            }
+          },
+          typography: (theme) => ({
+            DEFAULT: {
+              css: {
+                color: theme('colors.primary'),
+                a: {
+                  color: theme('colors.accent'),
+                  '&:hover': {
+                    color: theme('colors.accentHover'),
                   },
-                  h1: { color: theme('colors.primary') },
-                  h2: { color: theme('colors.primary') },
-                  h3: { color: theme('colors.primary') },
-                  h4: { color: theme('colors.primary') },
-                  blockquote: { borderLeftColor: theme('colors.accent') },
                 },
+                h1: { color: theme('colors.primary') },
+                h2: { color: theme('colors.primary') },
+                h3: { color: theme('colors.primary') },
+                h4: { color: theme('colors.primary') },
+                blockquote: { borderLeftColor: theme('colors.accent') },
               },
-            }),
-          }
+            },
+          }),
         }
       }
-    </script>
-    <style>
-      body {
-        background-color: #ffffff;
-        color: #111827;
-      }
-      ::selection {
-        background-color: #fca5a5; /* Light red selection */
-        color: #000;
-      }
-    </style>
-<script type="importmap">
+    }
+  </script>
+  <style>
+    body {
+      background-color: #ffffff;
+      color: #111827;
+    }
+
+    ::selection {
+      background-color: #fca5a5;
+      /* Light red selection */
+      color: #000;
+    }
+  </style>
+  <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@^19.2.3",
@@ -90,16 +96,14 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
-  <body>
-    <!-- Google Tag Manager (noscript) -->
-    <!-- TODO: Replace GTM-XXXXXXX with your actual GTM Container ID -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
 
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+<body>
+
+
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
 </html>
