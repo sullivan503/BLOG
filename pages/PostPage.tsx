@@ -34,17 +34,16 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
     const isMedia = post.categories?.some(c => ['media', 'movie', 'film', '影音'].some(k => c.toLowerCase().includes(k)));
 
     // Layout Logic:
-    // 1. Amazon Layout: Books & Media (Vertical Cover + Side Info)
-    // 2. Cinema Layout: Games (Hero Image + Top Info)
+    // 1. Amazon Layout: Books (Vertical Cover + Side Info)
+    // 2. Cinema Layout: Games & Media (Hero Image + Top Info - Netflix/Steam Style)
     // 3. Standard Layout: Blog Posts
-    const isAmazonLayout = isBook || isMedia;
-    const isGameLayout = isGame;
+    const isAmazonLayout = isBook;
+    const isCinemaLayout = isGame || isMedia;
 
     // Determine Type Icon
     let TypeIcon = Star;
     if (isGame) TypeIcon = Gamepad2;
     else if (isBook) TypeIcon = Book;
-    else if (isMedia) TypeIcon = MonitorPlay;
 
     return (
         <div className="max-w-4xl mx-auto">
@@ -63,8 +62,8 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                 {backLabel}
             </button>
 
-            {/* --- LAYOUT 1: CINEMA STYLE (GAMES) --- */}
-            {isGameLayout && (
+            {/* --- LAYOUT 1: CINEMA STYLE (GAMES & MEDIA) --- */}
+            {isCinemaLayout && (
                 <div className="mb-12">
                     {/* Hero Image */}
                     <div className="rounded-xl overflow-hidden shadow-2xl mb-8 border border-gray-900/5 aspect-video relative group">
@@ -72,10 +71,19 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-8">
                             <div className="text-white">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <span className="bg-accent text-white px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">GAME</span>
-                                    {post.acf?.platform && (
+                                    <span className="bg-accent text-white px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">
+                                        {isGame ? 'GAME' : 'CINEMA'}
+                                    </span>
+                                    {/* Platform for Games */}
+                                    {isGame && post.acf?.platform && (
                                         <span className="bg-white/20 backdrop-blur-md px-2 py-0.5 rounded text-xs font-mono border border-white/30">
                                             {Array.isArray(post.acf.platform) ? post.acf.platform[0] : post.acf.platform}
+                                        </span>
+                                    )}
+                                    {/* Creator/Director for Media */}
+                                    {isMedia && post.acf?.creator && (
+                                        <span className="bg-white/20 backdrop-blur-md px-2 py-0.5 rounded text-xs font-mono border border-white/30">
+                                            Dir. {post.acf.creator}
                                         </span>
                                     )}
                                 </div>
@@ -179,7 +187,7 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                                 <div className="flex justify-between items-start mb-2">
                                     <div className="flex items-center text-accent font-bold text-xs uppercase tracking-wide">
                                         <Sparkles size={14} className="mr-1.5" />
-                                        {isGame ? 'AI Game Brief' : 'AI Summary'}
+                                        {isGame ? 'AI Game Brief' : isMedia ? 'AI Movie Brief' : 'AI Summary'}
                                     </div>
                                     {!summary && (
                                         <button
@@ -208,7 +216,7 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
             )}
 
             {/* --- LAYOUT 3: STANDARD BLOG LAYOUT --- */}
-            {(!isGameLayout && !isAmazonLayout) && (
+            {(!isCinemaLayout && !isAmazonLayout) && (
                 <>
                     {/* Post Header */}
                     <header className="mb-12 text-center max-w-2xl mx-auto">

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BlogPost } from '../types';
-import { Star, Book, Gamepad2 } from 'lucide-react';
+import { Star, Book, Gamepad2, MonitorPlay } from 'lucide-react';
 
 interface GalleryCardProps {
   item: BlogPost;
@@ -12,10 +12,14 @@ const GalleryCard: React.FC<GalleryCardProps> = ({ item, type, onClick }) => {
   const rating = item.acf?.rating || 0;
 
   // Decide Icon based on type
-  const FallbackIcon = type === 'game' ? Gamepad2 : Book;
+  let FallbackIcon = Book;
+  if (type === 'game') FallbackIcon = Gamepad2;
+  else if (type === 'media') FallbackIcon = MonitorPlay;
 
   // Aspect ratio
-  const imageAspectClass = type === 'book' ? 'aspect-[3/4]' : 'aspect-video';
+  // Books: Vertical (Standard 2:3)
+  // Games & Media: Horizontal (16:9 - Netflix/Steam Style)
+  const imageAspectClass = type === 'book' ? 'aspect-[2/3]' : 'aspect-video';
 
   // Get metadata badge content
   const getBadgeContent = () => {
