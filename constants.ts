@@ -32,7 +32,7 @@ export const SOCIAL_LINKS = {
     email: "sullivan503@gmail.com",
     twitter: "https://x.com/sullivan617",
     twitterHandle: "@sullivan617",
-    github: "https://github.com/feng", // 请更新为你真实的 Github 链接
+    github: "https://github.com/sullivan503", // 请更新为你真实的 Github 链接
     wechatOA: "疯文斋",
     wechatOAImage: "/oa-qr.jpg",
     wechatPersonal: "Fengwenzhai503",
