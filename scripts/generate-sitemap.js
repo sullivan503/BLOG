@@ -1,6 +1,5 @@
 import { createWriteStream } from 'fs';
 import { SitemapStream, streamToPromise } from 'sitemap';
-import fetch from 'node-fetch';
 
 // Configuration
 const SITE_URL = 'https://fengwz.me';
