@@ -151,6 +151,8 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
     useEffect(() => {
         if (initialTab === 'games') {
             setActiveTab('games');
+        } else if (initialTab === 'engineering') {
+            setActiveTab('engineering');
         } else {
             setActiveTab('tech');
         }
@@ -160,16 +162,24 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
     const handleTabChange = (tab: 'tech' | 'games' | 'engineering') => {
         setActiveTab(tab);
         if (tab === 'games') onNavigate('geek/games');
+        else if (tab === 'engineering') onNavigate('geek/engineering');
         else onNavigate('geek');
     };
 
     // Filter posts based on props
     const { gamePosts, techPosts } = useMemo(() => {
         const games = posts.filter(p =>
-            (p.categories && p.categories.some(c => c.toLowerCase() === 'games' || c === '游戏'))
+        (p.categories && p.categories.some(c => {
+            const lower = c.toLowerCase();
+            // Relaxed filter for Chinese "游戏收藏", "游戏推荐" etc.
+            return lower.includes('game') || c.includes('游戏');
+        }))
         );
         const techs = posts.filter(p =>
-            (p.categories && p.categories.some(c => c.toLowerCase() === 'tech' || c.toLowerCase() === 'engineering' || c === '技术'))
+        (p.categories && p.categories.some(c => {
+            const lower = c.toLowerCase();
+            return lower === 'tech' || lower.includes('engineer') || c.includes('技术') || lower === 'coding';
+        }))
         );
         return { gamePosts: games, techPosts: techs };
     }, [posts]);
@@ -451,13 +461,20 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                         {gamePosts.length > 0 ? (
                             <>
                                 {/* High Rating */}
-                                {renderGameGroup("⭐⭐⭐⭐⭐ 灵感神作 (Masterpiece)", gamePosts.filter(g => (g.rating || 0) >= 4.5))}
+                                {/* High Rating (5) */}
+                                {renderGameGroup("⭐⭐⭐⭐⭐ 灵感神作 (Masterpiece)", gamePosts.filter(g => (g.acf?.rating || 0) === 5))}
 
-                                {/* Good */}
-                                {renderGameGroup("⭐⭐⭐⭐ 值得体验 (Great)", gamePosts.filter(g => (g.rating || 0) >= 3.5 && (g.rating || 0) < 4.5))}
+                                {/* Good (4) */}
+                                {renderGameGroup("⭐⭐⭐⭐ 值得体验 (Great)", gamePosts.filter(g => (g.acf?.rating || 0) === 4))}
 
-                                {/* Others */}
-                                {renderGameGroup("⭐⭐⭐ 休闲娱乐 (Others)", gamePosts.filter(g => (g.rating || 0) < 3.5))}
+                                {/* Others (1-3) */}
+                                {renderGameGroup("⭐⭐⭐ 休闲娱乐 (Casual)", gamePosts.filter(g => {
+                                    const r = g.acf?.rating || 0;
+                                    return r >= 1 && r <= 3;
+                                }))}
+
+                                {/* Unplayed (0) */}
+                                {renderGameGroup("🎮 想玩 / 暂存 (Backlog)", gamePosts.filter(g => (g.acf?.rating || 0) === 0))}
                             </>
                         ) : (
                             <div className="text-center py-12 border border-dashed border-gray-200 rounded-2xl">

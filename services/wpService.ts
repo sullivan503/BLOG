@@ -14,7 +14,7 @@ const formatPost = (post: any): BlogPost => {
 
   // Priority 3: Default placeholder
   if (!imageUrl) {
-     imageUrl = 'https://picsum.photos/seed/wp/800/400';
+    imageUrl = 'https://picsum.photos/seed/wp/800/400';
   }
 
   let author = 'Admin';
@@ -31,20 +31,20 @@ const formatPost = (post: any): BlogPost => {
   // Extract Tags
   const tags: string[] = [];
   if (post._embedded && post._embedded['wp:term']) {
-      // term[0] usually categories, term[1] usually tags
-      const terms = post._embedded['wp:term'].flat();
-      terms.forEach((term: any) => {
-          if (term.taxonomy === 'post_tag') tags.push(term.name);
-      });
+    // term[0] usually categories, term[1] usually tags
+    const terms = post._embedded['wp:term'].flat();
+    terms.forEach((term: any) => {
+      if (term.taxonomy === 'post_tag') tags.push(term.name);
+    });
   }
-  
+
   // Extract Categories
   const categories: string[] = [];
   if (post._embedded && post._embedded['wp:term']) {
-      const terms = post._embedded['wp:term'].flat();
-      terms.forEach((term: any) => {
-          if (term.taxonomy === 'category') categories.push(term.name);
-      });
+    const terms = post._embedded['wp:term'].flat();
+    terms.forEach((term: any) => {
+      if (term.taxonomy === 'category') categories.push(term.name);
+    });
   }
 
   // Extract Rating from Tags
@@ -53,14 +53,14 @@ const formatPost = (post: any): BlogPost => {
 
   const numericTag = tags.find(t => /^\d+(\.\d+)?$/.test(t));
   if (numericTag) {
-      rating = parseFloat(numericTag);
-      ratingTagFound = numericTag;
+    rating = parseFloat(numericTag);
+    ratingTagFound = numericTag;
   } else {
-      const looseTag = tags.find(t => /^\d+(\.\d+)?(star|stars|星|分)$/i.test(t));
-      if (looseTag) {
-          rating = parseFloat(looseTag);
-          ratingTagFound = looseTag;
-      }
+    const looseTag = tags.find(t => /^\d+(\.\d+)?(star|stars|星|分)$/i.test(t));
+    if (looseTag) {
+      rating = parseFloat(looseTag);
+      ratingTagFound = looseTag;
+    }
   }
 
   const displayTags = tags.filter(t => t !== ratingTagFound);
@@ -74,10 +74,13 @@ const formatPost = (post: any): BlogPost => {
     author: author,
     date: date,
     readTime: `${Math.ceil(post.content.rendered.length / 1000)} min read`,
-    tags: displayTags, 
+    tags: displayTags,
     categories: categories,
     imageUrl: imageUrl,
-    rating: rating
+    // Use ACF rating if available, otherwise fall back to tag-based rating
+    rating: post.acf?.rating ? Number(post.acf.rating) : rating,
+    // Pass through all ACF fields
+    acf: post.acf
   };
 };
 
@@ -89,7 +92,7 @@ export const fetchWordPressPosts = async (): Promise<BlogPost[]> => {
     const cacheBuster = `&_cb=${new Date().getTime()}`;
     const response = await fetch(`${WORDPRESS_API_URL}/wp-json/wp/v2/posts?_embed&per_page=100${cacheBuster}`);
     if (!response.ok) {
-        throw new Error(`WordPress API returned ${response.status} ${response.statusText}`);
+      throw new Error(`WordPress API returned ${response.status} ${response.statusText}`);
     }
     const data = await response.json();
     return data.map(formatPost);
@@ -100,82 +103,82 @@ export const fetchWordPressPosts = async (): Promise<BlogPost[]> => {
 };
 
 export const fetchWordPressPage = async (slug: string): Promise<BlogPost | null> => {
-    if (!WORDPRESS_API_URL) return null;
-  
-    try {
-      const cacheBuster = `&_cb=${new Date().getTime()}`;
-      const response = await fetch(`${WORDPRESS_API_URL}/wp-json/wp/v2/pages?slug=${slug}&_embed${cacheBuster}`);
-      if (!response.ok) {
-        throw new Error(`WordPress API page fetch failed: ${response.status}`);
-      }
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
-          return formatPost(data[0]);
-      }
-      return null;
-    } catch (error) {
-      console.error(`Error fetching WordPress page '${slug}':`, error);
-      return null;
+  if (!WORDPRESS_API_URL) return null;
+
+  try {
+    const cacheBuster = `&_cb=${new Date().getTime()}`;
+    const response = await fetch(`${WORDPRESS_API_URL}/wp-json/wp/v2/pages?slug=${slug}&_embed${cacheBuster}`);
+    if (!response.ok) {
+      throw new Error(`WordPress API page fetch failed: ${response.status}`);
     }
-  };
+    const data = await response.json();
+
+    if (data && data.length > 0) {
+      return formatPost(data[0]);
+    }
+    return null;
+  } catch (error) {
+    console.error(`Error fetching WordPress page '${slug}':`, error);
+    return null;
+  }
+};
 
 export interface ConsultationFormData {
-    name: string;
-    email: string;
-    mobile: string;
-    wechat?: string;
-    message: string;
+  name: string;
+  email: string;
+  mobile: string;
+  wechat?: string;
+  message: string;
 }
 
 const submitToCF7 = async (formData: FormData, formId: string): Promise<{ success: boolean; message: string }> => {
-    if (!WORDPRESS_API_URL || !formId) {
-        return { success: false, message: "Configuration Error: API URL or Form ID missing." };
+  if (!WORDPRESS_API_URL || !formId) {
+    return { success: false, message: "Configuration Error: API URL or Form ID missing." };
+  }
+
+  const apiUrl = `${WORDPRESS_API_URL}/wp-json/contact-form-7/v1/contact-forms/${formId}/feedback`;
+
+  formData.append('_wpcf7', formId);
+  formData.append('_wpcf7_version', '5.9.3');
+  formData.append('_wpcf7_locale', 'zh_CN');
+  formData.append('_wpcf7_unit_tag', `wpcf7-f${formId}-p0-o1`);
+  formData.append('_wpcf7_container_post', '0');
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.status === 'mail_sent') {
+      return { success: true, message: data.message };
+    } else {
+      return { success: false, message: data.message || "Submission failed. Please check your inputs." };
     }
-
-    const apiUrl = `${WORDPRESS_API_URL}/wp-json/contact-form-7/v1/contact-forms/${formId}/feedback`;
-    
-    formData.append('_wpcf7', formId);
-    formData.append('_wpcf7_version', '5.9.3'); 
-    formData.append('_wpcf7_locale', 'zh_CN');
-    formData.append('_wpcf7_unit_tag', `wpcf7-f${formId}-p0-o1`);
-    formData.append('_wpcf7_container_post', '0');
-
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.json();
-
-        if (data.status === 'mail_sent') {
-            return { success: true, message: data.message };
-        } else {
-            return { success: false, message: data.message || "Submission failed. Please check your inputs." };
-        }
-    } catch (error) {
-        console.error("CF7 Submission Error:", error);
-        return { success: false, message: "Network error. Please try again later." };
-    }
+  } catch (error) {
+    console.error("CF7 Submission Error:", error);
+    return { success: false, message: "Network error. Please try again later." };
+  }
 };
 
 export const submitConsultation = async (data: ConsultationFormData): Promise<{ success: boolean; message: string }> => {
-    const formData = new FormData();
-    formData.append('your-name', data.name);
-    formData.append('your-email', data.email);
-    formData.append('mobile', data.mobile); 
-    formData.append('wechat', data.wechat || ''); 
-    formData.append('your-message', data.message);
-    formData.append('your-subject', `Consultation Request: ${data.name}`);
+  const formData = new FormData();
+  formData.append('your-name', data.name);
+  formData.append('your-email', data.email);
+  formData.append('mobile', data.mobile);
+  formData.append('wechat', data.wechat || '');
+  formData.append('your-message', data.message);
+  formData.append('your-subject', `Consultation Request: ${data.name}`);
 
-    return submitToCF7(formData, WP_CONTACT_FORM_ID);
+  return submitToCF7(formData, WP_CONTACT_FORM_ID);
 };
 
 export const submitNewsletter = async (email: string): Promise<{ success: boolean; message: string }> => {
-    const formData = new FormData();
-    formData.append('your-email', email);
-    formData.append('your-subject', 'New Newsletter Subscription');
+  const formData = new FormData();
+  formData.append('your-email', email);
+  formData.append('your-subject', 'New Newsletter Subscription');
 
-    return submitToCF7(formData, WP_NEWSLETTER_FORM_ID);
+  return submitToCF7(formData, WP_NEWSLETTER_FORM_ID);
 };
