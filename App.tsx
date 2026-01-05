@@ -125,23 +125,50 @@ const App: React.FC = () => {
         let post = posts.find(p => p.slug === route.slug);
         if (isLoading) return <div className="text-center py-20 animate-pulse text-secondary">Loading content...</div>;
         if (post) {
-          // Determine intelligent back button behavior
+          // Determine intelligent back button behavior based on category priority
           let backPath = 'essays';
           let backLabel = 'Back to Articles';
           const cats = post.categories?.map(c => c.toLowerCase()) || [];
 
-          if (cats.some(c => ['books', '书架', 'media', '影音', 'knowledge', '课程与知识'].includes(c))) {
-            backPath = 'library';
-            backLabel = 'Back to Library';
-          } else if (cats.some(c => ['games', '游戏'].includes(c))) {
+          // 1. Business & Projects
+          if (cats.some(c => ['business', '商业', 'projects', '项目', 'achievements', '成果'].some(k => c.includes(k)))) {
+            backPath = 'projects';
+            backLabel = 'Back to Business';
+          }
+          // 2. Geek & Digital Life
+          else if (cats.some(c => ['games', '游戏'].some(k => c.includes(k)))) {
             backPath = 'geek/games';
             backLabel = 'Back to Games';
-          } else if (cats.some(c => ['tech', '极客文章', 'gear'].includes(c))) {
+          }
+          else if (cats.some(c => ['tech', 'engineering', '技术', 'gear'].some(k => c.includes(k)))) {
             backPath = 'geek';
-            backLabel = 'Back to Geek Space';
-          } else if (cats.some(c => ['projects', 'achievements', 'project', '项目', '成果'].includes(c))) {
-            backPath = 'projects';
-            backLabel = 'Back to Projects';
+            backLabel = 'Back to Digital Life';
+          }
+          // 3. Digital Library (Books, Media, Knowledge)
+          else if (cats.some(c => ['books', '书', 'media', '影音'].some(k => c.includes(k)))) {
+            backPath = 'library';
+            backLabel = 'Back to Library';
+          }
+          else if (cats.some(c => ['knowledge', '知识', 'course'].some(k => c.includes(k)))) {
+            backPath = 'library'; // Ideally navigate to tab if possible, for now Library root is safe
+            backLabel = 'Back to Knowledge';
+          }
+          // 4. Think & Write (Mind, Body, Wealth, Journal)
+          else if (cats.some(c => ['mind', '心智', '心理'].some(k => c.includes(k)))) {
+            backPath = 'category/mind';
+            backLabel = 'Back to Mind';
+          }
+          else if (cats.some(c => ['body', '身体', 'life', '健康'].some(k => c.includes(k)))) {
+            backPath = 'category/body';
+            backLabel = 'Back to Body';
+          }
+          else if (cats.some(c => ['wealth', '财富', 'investment'].some(k => c.includes(k)))) {
+            backPath = 'category/wealth';
+            backLabel = 'Back to Wealth';
+          }
+          else if (cats.some(c => ['journal', '随笔', 'daily'].some(k => c.includes(k)))) {
+            backPath = 'category/journal';
+            backLabel = 'Back to Journal';
           }
 
           return <PostPage post={post} onBack={() => navigate(backPath)} backLabel={backLabel} />;
