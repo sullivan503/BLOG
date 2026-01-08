@@ -110,6 +110,46 @@ export const fetchWordPressPosts = async (): Promise<BlogPost[]> => {
   }
 };
 
+// Fetch Sticky Posts (Featured)
+export const fetchStickyPosts = async (): Promise<BlogPost[]> => {
+  if (!WORDPRESS_API_URL) return [];
+  try {
+    const cacheBuster = `&_cb=${new Date().getTime()}`;
+    // Fetch sticky posts
+    const response = await fetch(`${WORDPRESS_API_URL}/wp-json/wp/v2/posts?_embed&sticky=true${cacheBuster}`);
+    if (!response.ok) throw new Error("Failed to fetch sticky posts");
+    const data = await response.json();
+    return data.map(formatPost);
+  } catch (error) {
+    console.error("Error fetching sticky posts:", error);
+    return [];
+  }
+};
+
+// Fetch Posts by Tag Slug
+export const fetchPostsByTag = async (tagSlug: string, limit: number = 1): Promise<BlogPost[]> => {
+  if (!WORDPRESS_API_URL) return [];
+  try {
+    const cacheBuster = `&_cb=${new Date().getTime()}`;
+    // 1. Get Tag ID from Slug
+    const tagRes = await fetch(`${WORDPRESS_API_URL}/wp-json/wp/v2/tags?slug=${tagSlug}`);
+    const tagData = await tagRes.json();
+
+    if (!tagData || tagData.length === 0) return []; // Tag not found
+    const tagId = tagData[0].id;
+
+    // 2. Fetch Posts with this Tag ID
+    const response = await fetch(`${WORDPRESS_API_URL}/wp-json/wp/v2/posts?_embed&tags=${tagId}&per_page=${limit}${cacheBuster}`);
+    if (!response.ok) throw new Error(`Failed to fetch posts for tag ${tagSlug}`);
+
+    const data = await response.json();
+    return data.map(formatPost);
+  } catch (error) {
+    console.error(`Error fetching posts by tag '${tagSlug}':`, error);
+    return [];
+  }
+};
+
 export const fetchWordPressPage = async (slug: string): Promise<BlogPost | null> => {
   if (!WORDPRESS_API_URL) return null;
 

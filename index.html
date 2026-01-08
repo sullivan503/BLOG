@@ -21,27 +21,32 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Merriweather:wght@300;400;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
     rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            serif: ['Merriweather', 'serif'],
+            serif: ['Merriweather', 'Georgia', 'serif'], // Body text
+            display: ['Lora', 'serif'], // Headings
+            mono: ['JetBrains Mono', 'monospace'], // UI Elements
+            sans: ['Merriweather', 'sans-serif'], // Fallback
           },
           colors: {
-            background: '#ffffff', // pure white
-            surface: '#f3f4f6', // gray-100 (light grey for cards)
-            surfaceHighlight: '#e5e7eb', // gray-200
-            primary: '#111827', // gray-900 (Deep black for text)
-            secondary: '#4b5563', // gray-600 (Medium grey for subtext)
-            accent: '#b91c1c', // red-700 (Classic deep red)
-            accentHover: '#991b1b', // red-800
+            background: '#FFFFFF',
+            surface: '#F7F7F5', // Featured box bg
+            primary: '#111111', // Ink
+            secondary: '#555555', // Ink Light
+            accent: '#D32F2F', // Red
+            accentHover: '#b71c1c',
+            border: '#EAEAEA',
+          },
+          maxWidth: {
+            'site': '1100px',
           },
           animation: {
-            'fade-in': 'fadeIn 0.5s ease-out',
+            'fade-in': 'fadeIn 0.6s ease-out',
           },
           keyframes: {
             fadeIn: {
@@ -53,17 +58,19 @@
             DEFAULT: {
               css: {
                 color: theme('colors.primary'),
+                fontFamily: theme('fontFamily.serif'),
                 a: {
-                  color: theme('colors.accent'),
+                  color: theme('colors.primary'),
+                  textDecoration: 'none',
+                  borderBottom: `1px solid ${theme('colors.accent')}`,
                   '&:hover': {
-                    color: theme('colors.accentHover'),
+                    color: theme('colors.accent'),
                   },
                 },
-                h1: { color: theme('colors.primary') },
-                h2: { color: theme('colors.primary') },
-                h3: { color: theme('colors.primary') },
-                h4: { color: theme('colors.primary') },
-                blockquote: { borderLeftColor: theme('colors.accent') },
+                h1: { fontFamily: theme('fontFamily.display'), color: theme('colors.primary'), fontWeight: '700' },
+                h2: { fontFamily: theme('fontFamily.display'), color: theme('colors.primary'), fontWeight: '700' },
+                h3: { fontFamily: theme('fontFamily.display'), color: theme('colors.primary'), fontWeight: '700' },
+                blockquote: { borderLeftColor: theme('colors.accent'), fontStyle: 'italic', color: theme('colors.secondary') },
               },
             },
           }),

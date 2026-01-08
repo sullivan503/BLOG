@@ -13,7 +13,7 @@ interface GeekProps {
 
 // --- Custom SVG Architecture Component ---
 const HeadlessArchDiagram = () => (
-    <div className="w-full bg-white rounded-xl border border-gray-200 p-8 shadow-sm hover:shadow-md transition-all overflow-hidden relative group">
+    <div className="w-full bg-white border border-gray-200 p-8 shadow-sm hover:shadow-md transition-all overflow-hidden relative group">
         {/* Background Grid & Noise */}
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#000000 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
         <div className="absolute top-0 right-0 p-4 opacity-[0.05] text-primary">
@@ -40,7 +40,7 @@ const HeadlessArchDiagram = () => (
         <div className="relative z-10 flex flex-col lg:flex-row items-stretch justify-between gap-6 lg:gap-4">
 
             {/* 1. CI/CD Pipeline (Source) */}
-            <div className="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-5 hover:border-blue-300 transition-colors relative group/ci">
+            <div className="flex-1 bg-gray-50 border border-gray-200 p-5 hover:border-blue-300 transition-colors relative group/ci">
                 <div className="absolute -top-3 left-4 bg-blue-50 text-blue-600 px-2 py-0.5 text-[10px] font-mono font-bold border border-blue-100 rounded uppercase tracking-wider">
                     CI/CD Pipeline
                 </div>
@@ -63,7 +63,7 @@ const HeadlessArchDiagram = () => (
             </div>
 
             {/* 2. Backend Core */}
-            <div className="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-5 hover:border-indigo-300 transition-colors relative group/be">
+            <div className="flex-1 bg-gray-50 border border-gray-200 p-5 hover:border-indigo-300 transition-colors relative group/be">
                 <div className="absolute -top-3 left-4 bg-indigo-50 text-indigo-600 px-2 py-0.5 text-[10px] font-mono font-bold border border-indigo-100 rounded uppercase tracking-wider">
                     Data Core
                 </div>
@@ -86,12 +86,12 @@ const HeadlessArchDiagram = () => (
             </div>
 
             {/* 3. The Edge (Cloudflare) - Wraps Frontend */}
-            <div className="flex-[1.5] relative p-[1px] rounded-lg bg-gradient-to-r from-orange-200 to-transparent">
-                <div className="absolute -top-3 right-4 z-20 flex items-center bg-white text-orange-600 border border-orange-200 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider shadow-sm">
+            <div className="flex-[1.5] relative p-[1px] bg-gradient-to-r from-orange-200 to-transparent">
+                <div className="absolute -top-3 right-4 z-20 flex items-center bg-white text-orange-600 border border-orange-200 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider shadow-sm">
                     <Shield size={10} className="mr-1" /> Cloudflare Secured
                 </div>
 
-                <div className="h-full bg-white rounded-lg p-5 border border-gray-100 relative overflow-hidden group/fe shadow-sm">
+                <div className="h-full bg-white p-5 border border-gray-100 relative overflow-hidden group/fe shadow-sm">
                     {/* Background Glint */}
                     <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-orange-50/50 blur-[50px] rounded-full group-hover/fe:bg-orange-100/50 transition-all"></div>
 
@@ -145,16 +145,16 @@ const ActivityDot = () => (
 
 
 const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab }) => {
-    const [activeTab, setActiveTab] = useState<'tech' | 'games' | 'engineering'>('tech');
+    const [activeTab, setActiveTab] = useState<'tech' | 'games' | 'engineering'>('engineering');
 
     // Sync with initialTab prop when it changes or on mount
     useEffect(() => {
         if (initialTab === 'games') {
             setActiveTab('games');
-        } else if (initialTab === 'engineering') {
-            setActiveTab('engineering');
-        } else {
+        } else if (initialTab === 'tech') {
             setActiveTab('tech');
+        } else {
+            setActiveTab('engineering');
         }
     }, [initialTab]);
 
@@ -162,6 +162,7 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
     const handleTabChange = (tab: 'tech' | 'games' | 'engineering') => {
         setActiveTab(tab);
         if (tab === 'games') onNavigate('geek/games');
+        else if (tab === 'tech') onNavigate('geek/tech');
         else if (tab === 'engineering') onNavigate('geek/engineering');
         else onNavigate('geek');
     };
@@ -228,16 +229,16 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
 
             {/* Tabs */}
             <div className="flex justify-center mb-12">
-                <div className="inline-flex bg-surface border border-gray-200 rounded-full p-1">
+                <div className="inline-flex bg-surface border border-gray-200 p-1">
                     {[
-                        { id: 'tech', label: '技术与装备 (Gear)', icon: <Cpu size={16} /> },
                         { id: 'engineering', label: '技术写作 (Engineering)', icon: <Terminal size={16} /> },
-                        { id: 'games', label: '游戏收藏 (Games)', icon: <Gamepad2 size={16} /> }
+                        { id: 'games', label: '游戏收藏 (Games)', icon: <Gamepad2 size={16} /> },
+                        { id: 'tech', label: '技术与装备 (Gear)', icon: <Cpu size={16} /> }
                     ].map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => handleTabChange(tab.id as any)}
-                            className={`flex items-center px-5 py-2 rounded-full text-sm font-bold transition-all ${activeTab === tab.id
+                            className={`flex items-center px-5 py-2 text-sm font-bold transition-all ${activeTab === tab.id
                                 ? 'bg-primary text-white shadow-lg'
                                 : 'text-secondary hover:text-primary'
                                 }`}
@@ -280,7 +281,7 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {/* Workstation */}
-                                <div className="bg-surface p-6 rounded-xl border border-gray-100 hover:border-accent/20 transition-colors">
+                                <div className="bg-surface p-6 border border-gray-100 hover:border-accent/20 transition-colors">
                                     <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Desk Setup</h3>
                                     <ul className="space-y-4">
                                         <li className="flex items-start">
@@ -301,7 +302,7 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                                 </div>
 
                                 {/* Mobile & Audio */}
-                                <div className="bg-surface p-6 rounded-xl border border-gray-100 hover:border-accent/20 transition-colors">
+                                <div className="bg-surface p-6 border border-gray-100 hover:border-accent/20 transition-colors">
                                     <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Mobile & Creator</h3>
                                     <ul className="space-y-4">
                                         <li className="flex items-start">
@@ -329,7 +330,7 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                                 </div>
 
                                 {/* Home Hub */}
-                                <div className="bg-surface p-6 rounded-xl border border-gray-100 hover:border-accent/20 transition-colors">
+                                <div className="bg-surface p-6 border border-gray-100 hover:border-accent/20 transition-colors">
                                     <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Home Hub</h3>
                                     <ul className="space-y-4">
                                         <li className="flex items-start">
@@ -350,7 +351,7 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                                 </div>
 
                                 {/* Play */}
-                                <div className="bg-surface p-6 rounded-xl border border-gray-100 hover:border-accent/20 transition-colors">
+                                <div className="bg-surface p-6 border border-gray-100 hover:border-accent/20 transition-colors">
                                     <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Gaming</h3>
                                     <ul className="space-y-3">
                                         <li className="flex items-center justify-between">
@@ -378,7 +379,7 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Knowledge */}
-                                <div className="border border-gray-200 rounded-lg p-6 hover:border-accent/30 transition-colors">
+                                <div className="border border-gray-200 p-6 hover:border-accent/30 transition-colors">
                                     <div className="font-bold text-primary mb-4 text-lg">Knowledge & Second Brain</div>
                                     <ul className="space-y-3 text-sm text-secondary">
                                         <li className="flex justify-between items-center border-b border-dashed border-gray-100 pb-2">
@@ -397,7 +398,7 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                                 </div>
 
                                 {/* Media & Creative */}
-                                <div className="border border-gray-200 rounded-lg p-6 hover:border-accent/30 transition-colors">
+                                <div className="border border-gray-200 p-6 hover:border-accent/30 transition-colors">
                                     <div className="font-bold text-primary mb-4 text-lg">Creative & Media</div>
                                     <ul className="space-y-3 text-sm text-secondary">
                                         <li className="flex justify-between items-center border-b border-dashed border-gray-100 pb-2">
@@ -421,13 +422,18 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                 )}
 
                 {/* ENGINEERING TAB (New) - Standard List Layout */}
-                {(activeTab === 'engineering' || activeTab === 'tech') && (
+                {(activeTab === 'engineering') && (
                     <div className="space-y-8 animate-fade-in">
-                        <div className="flex items-center mb-6">
-                            <Terminal className="text-accent mr-3" size={24} />
-                            <h2 className="text-2xl font-bold text-primary font-serif">
-                                {activeTab === 'engineering' ? '技术笔记 (Engineering Notes)' : '技术与装备 (Gear & Notes)'}
-                            </h2>
+                        <div className="flex flex-col mb-8">
+                            <div className="flex items-center mb-2">
+                                <Terminal className="text-accent mr-3" size={24} />
+                                <h2 className="text-2xl font-bold text-primary font-serif">
+                                    技术写作 (Engineering)
+                                </h2>
+                            </div>
+                            <p className="text-sm text-secondary ml-9 font-serif italic opacity-80">
+                                我关于科技与技术的思考和折腾日记
+                            </p>
                         </div>
                         {techPosts.length > 0 ? (
                             <div className="space-y-6 max-w-4xl mx-auto">
@@ -435,7 +441,7 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                                     <div
                                         key={post.id}
                                         onClick={() => onNavigate(`post/${post.slug}`)}
-                                        className="group flex flex-col p-6 bg-white border border-gray-100 rounded-xl hover:shadow-lg hover:border-accent/30 cursor-pointer transition-all duration-300 relative overflow-hidden"
+                                        className="group flex flex-col p-6 bg-white border border-gray-100 hover:shadow-lg hover:border-accent/30 cursor-pointer transition-all duration-300 relative overflow-hidden"
                                     >
                                         <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
 
@@ -497,7 +503,7 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 

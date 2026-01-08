@@ -10,7 +10,7 @@ interface PostCardProps {
 const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
   return (
     <article
-      className="group flex flex-col bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-accent/30 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-2 h-full"
+      className="group flex flex-col bg-white border border-gray-100 hover:border-accent/30 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-2 h-full overflow-hidden"
       onClick={() => onClick(post.slug)}
     >
       <div className="h-52 overflow-hidden relative">
@@ -21,7 +21,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
         />
         <div className="absolute top-4 left-4 z-20 flex space-x-2">
           {post.tags.slice(0, 1).map(tag => (
-            <span key={tag} className="bg-white/90 backdrop-blur-md px-3 py-1 text-xs font-mono text-accent border border-gray-200 rounded-md font-bold shadow-sm">
+            <span key={tag} className="bg-white/90 backdrop-blur-md px-3 py-1 text-xs font-mono text-accent border border-gray-200 font-bold shadow-sm">
               {tag}
             </span>
           ))}

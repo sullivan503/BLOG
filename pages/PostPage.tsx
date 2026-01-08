@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { BlogPost } from '../types';
-import { ArrowLeft, Calendar, Tag, Sparkles, Star, Clock, Gamepad2, Book, MonitorPlay } from 'lucide-react';
+import { ArrowLeft, Calendar, Tag, Sparkles, Star, Clock, Gamepad2, Book, MonitorPlay, Volume2, Loader2, Pause } from 'lucide-react';
 import CommentSection from '../components/CommentSection';
-import { generatePostSummary } from '../services/geminiService';
+import { generatePostSummary, generateAudio } from '../services/geminiService';
 import SEO from '../components/SEO';
 
 interface PostPageProps {
@@ -15,6 +15,20 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
     const [summary, setSummary] = useState<string | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
 
+    // Audio State
+    const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (audioElement) {
+                audioElement.pause();
+                audioElement.src = "";
+            }
+        };
+    }, [audioElement]);
+
     // Scroll to top when post opens
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -25,6 +39,45 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
         const result = await generatePostSummary(post.content);
         setSummary(result);
         setIsGenerating(false);
+    };
+
+    const handlePlayAudio = async () => {
+        if (isPlaying && audioElement) {
+            audioElement.pause();
+            setIsPlaying(false);
+            return;
+        }
+
+        if (audioElement && !isPlaying) {
+            audioElement.play();
+            setIsPlaying(true);
+            return;
+        }
+
+        // Generate Audio
+        setIsGeneratingAudio(true);
+        try {
+            // Use summary if available, otherwise excerpt, otherwise first 300 chars
+            const textToRead = summary || post.excerpt || post.content.substring(0, 300).replace(/<[^>]*>?/gm, '');
+
+            const base64Audio = await generateAudio(textToRead);
+
+            // Try WAV first, as it's a common default for raw generation
+            const audio = new Audio(`data:audio/wav;base64,${base64Audio}`);
+
+            audio.onerror = (e) => console.error("Audio playback error", e);
+            audio.onended = () => setIsPlaying(false);
+
+            await audio.play();
+
+            setAudioElement(audio);
+            setIsPlaying(true);
+        } catch (error) {
+            console.error("Audio generation failed", error);
+            alert("Failed to generate audio summary.");
+        } finally {
+            setIsGeneratingAudio(false);
+        }
     };
 
     // Check if this is a "Product/Review" type post (Books, Games, Media)
@@ -51,7 +104,7 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                 title={post.title}
                 description={post.excerpt}
                 image={post.imageUrl}
-                url={`https://fengwz.me/#post/${post.slug}`}
+                url={`https://fengwz.me/post/${post.slug}`}
             />
 
             <button
@@ -66,23 +119,23 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
             {isCinemaLayout && (
                 <div className="mb-12">
                     {/* Hero Image */}
-                    <div className="rounded-xl overflow-hidden shadow-2xl mb-8 border border-gray-900/5 aspect-video relative group">
+                    <div className="overflow-hidden shadow-2xl mb-8 border border-gray-900/5 aspect-video relative group">
                         <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-8">
                             <div className="text-white">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <span className="bg-accent text-white px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">
+                                    <span className="bg-accent text-white px-2 py-0.5 text-xs font-bold uppercase tracking-wider">
                                         {isGame ? 'GAME' : 'CINEMA'}
                                     </span>
                                     {/* Platform for Games */}
                                     {isGame && post.acf?.platform && (
-                                        <span className="bg-white/20 backdrop-blur-md px-2 py-0.5 rounded text-xs font-mono border border-white/30">
+                                        <span className="bg-white/20 backdrop-blur-md px-2 py-0.5 text-xs font-mono border border-white/30">
                                             {Array.isArray(post.acf.platform) ? post.acf.platform[0] : post.acf.platform}
                                         </span>
                                     )}
                                     {/* Creator/Director for Media */}
                                     {isMedia && post.acf?.creator && (
-                                        <span className="bg-white/20 backdrop-blur-md px-2 py-0.5 rounded text-xs font-mono border border-white/30">
+                                        <span className="bg-white/20 backdrop-blur-md px-2 py-0.5 text-xs font-mono border border-white/30">
                                             Dir. {post.acf.creator}
                                         </span>
                                     )}
@@ -107,21 +160,43 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                     </div>
 
                     {/* AI Summary Bar */}
-                    <div className="bg-surface border-l-4 border-accent p-6 rounded-r-xl shadow-sm mb-12">
+                    <div className="bg-surface border-l-4 border-accent p-6 shadow-sm mb-12">
                         <div className="flex justify-between items-start mb-2">
                             <div className="flex items-center text-accent font-bold uppercase tracking-widest text-xs">
                                 <Sparkles size={14} className="mr-2" />
                                 AI Brief
                             </div>
-                            {!summary && (
+                            <div className="flex items-center space-x-2">
                                 <button
-                                    onClick={handleGenerateSummary}
-                                    disabled={isGenerating}
-                                    className="text-[10px] bg-white text-accent border border-accent/30 px-3 py-1 rounded-full hover:bg-accent hover:text-white transition-all disabled:opacity-50 font-bold"
+                                    onClick={handlePlayAudio}
+                                    disabled={isGeneratingAudio}
+                                    className="flex items-center space-x-1 text-[10px] bg-accent/5 text-accent border border-accent/20 px-2 py-1 hover:bg-accent/10 transition-all disabled:opacity-50 font-bold"
+                                    title="Listen to Summary"
                                 >
-                                    {isGenerating ? 'Analyzing...' : 'Generate'}
+                                    {isGeneratingAudio ? (
+                                        <Loader2 size={12} className="animate-spin" />
+                                    ) : isPlaying ? (
+                                        <>
+                                            <Pause size={12} />
+                                            <span>Pause</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Volume2 size={12} />
+                                            <span>Listen</span>
+                                        </>
+                                    )}
                                 </button>
-                            )}
+                                {!summary && (
+                                    <button
+                                        onClick={handleGenerateSummary}
+                                        disabled={isGenerating}
+                                        className="text-[10px] bg-white text-accent border border-accent/30 px-3 py-1 hover:bg-accent hover:text-white transition-all disabled:opacity-50 font-bold"
+                                    >
+                                        {isGenerating ? 'Analyzing...' : 'Generate'}
+                                    </button>
+                                )}
+                            </div>
                         </div>
                         <p className="text-primary text-sm leading-relaxed italic opacity-80">
                             "{summary || post.excerpt}"
@@ -146,7 +221,7 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                             <div className="flex flex-wrap gap-2 mb-3 justify-center md:justify-start">
                                 {post.tags.map(tag => (
                                     !tag.match(/^\d/) && (
-                                        <span key={tag} className="bg-surface text-secondary px-2 py-0.5 rounded text-xs font-mono border border-gray-200">
+                                        <span key={tag} className="bg-surface text-secondary px-2 py-0.5 text-xs font-mono border border-gray-200">
                                             {tag}
                                         </span>
                                     )
@@ -183,7 +258,7 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                             )}
 
                             {/* AI Summary embedded in right column */}
-                            <div className="bg-surface border border-gray-100 rounded-lg p-5 relative text-left">
+                            <div className="bg-surface border border-gray-100 p-5 relative text-left">
                                 <div className="flex justify-between items-start mb-2">
                                     <div className="flex items-center text-accent font-bold text-xs uppercase tracking-wide">
                                         <Sparkles size={14} className="mr-1.5" />
@@ -193,7 +268,7 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                                         <button
                                             onClick={handleGenerateSummary}
                                             disabled={isGenerating}
-                                            className="text-[10px] bg-white text-accent border border-accent/30 px-3 py-1 rounded-full hover:bg-accent hover:text-white transition-all disabled:opacity-50 font-bold"
+                                            className="text-[10px] bg-white text-accent border border-accent/30 px-3 py-1 hover:bg-accent hover:text-white transition-all disabled:opacity-50 font-bold"
                                         >
                                             {isGenerating ? 'Thinking...' : 'Generate'}
                                         </button>
@@ -222,7 +297,7 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                     <header className="mb-12 text-center max-w-2xl mx-auto">
                         <div className="flex justify-center items-center space-x-3 mb-6">
                             {post.tags.map(tag => (
-                                <span key={tag} className="border border-gray-200 bg-surface text-secondary px-3 py-1 rounded-full text-xs font-mono uppercase tracking-wider font-bold">
+                                <span key={tag} className="border border-gray-200 bg-surface text-secondary px-3 py-1 text-xs font-mono uppercase tracking-wider font-bold">
                                     {tag}
                                 </span>
                             ))}
@@ -245,26 +320,48 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
                     </header>
 
                     {/* Feature Image */}
-                    <div className="rounded-xl overflow-hidden mb-12 shadow-lg border border-gray-100">
+                    <div className="overflow-hidden mb-12 shadow-lg border border-gray-100">
                         <img src={post.imageUrl} alt={post.title} className="w-full h-auto object-cover" />
                     </div>
 
                     {/* AI Summary Section */}
-                    <div className="bg-surface border-l-4 border-accent p-6 mb-12 relative overflow-hidden rounded-r-xl">
+                    <div className="bg-surface border-l-4 border-accent p-6 mb-12 relative overflow-hidden">
                         <div className="flex justify-between items-start mb-4 relative z-10">
                             <div className="flex items-center text-accent font-bold">
                                 <Sparkles size={18} className="mr-2" />
                                 AI Insight
                             </div>
-                            {!summary && (
+                            <div className="flex items-center space-x-2">
                                 <button
-                                    onClick={handleGenerateSummary}
-                                    disabled={isGenerating}
-                                    className="text-xs bg-white text-accent border border-accent/30 px-4 py-1.5 rounded-full hover:bg-accent hover:text-white transition-all disabled:opacity-50 font-medium"
+                                    onClick={handlePlayAudio}
+                                    disabled={isGeneratingAudio}
+                                    className="flex items-center space-x-1 text-xs bg-accent/5 text-accent border border-accent/20 px-3 py-1.5 hover:bg-accent/10 transition-all disabled:opacity-50 font-medium"
+                                    title="Listen to Insight"
                                 >
-                                    {isGenerating ? 'Analyzing...' : 'Generate Summary'}
+                                    {isGeneratingAudio ? (
+                                        <Loader2 size={14} className="animate-spin" />
+                                    ) : isPlaying ? (
+                                        <>
+                                            <Pause size={14} />
+                                            <span className="hidden sm:inline">Pause</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Volume2 size={14} />
+                                            <span className="hidden sm:inline">Listen</span>
+                                        </>
+                                    )}
                                 </button>
-                            )}
+                                {!summary && (
+                                    <button
+                                        onClick={handleGenerateSummary}
+                                        disabled={isGenerating}
+                                        className="text-xs bg-white text-accent border border-accent/30 px-4 py-1.5 hover:bg-accent hover:text-white transition-all disabled:opacity-50 font-medium"
+                                    >
+                                        {isGenerating ? 'Analyzing...' : 'Generate Summary'}
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         {isGenerating ? (
@@ -286,17 +383,17 @@ const PostPage: React.FC<PostPageProps> = ({ post, onBack, backLabel = "Back to 
             )}
 
             {/* Content - Prose Normal (Dark Text) */}
-            <article className="prose prose-lg prose-slate max-w-none mb-16 prose-headings:font-serif prose-headings:text-primary prose-a:text-accent prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl">
+            <article className="prose prose-lg prose-slate max-w-none mb-16 prose-headings:font-serif prose-headings:text-primary prose-a:text-accent prose-a:no-underline hover:prose-a:underline">
                 <div dangerouslySetInnerHTML={{ __html: post.content }} />
             </article>
 
             {/* Author Bio (Small) */}
-            <div className="bg-surface border border-gray-100 rounded-xl p-8 mb-12 flex items-center shadow-sm">
+            <div className="bg-surface border border-gray-100 p-8 mb-12 flex items-center shadow-sm">
                 <div className="relative">
                     <img
                         src="https://picsum.photos/seed/user/100/100"
                         alt={post.author}
-                        className="w-16 h-16 rounded-full mr-6 border-2 border-accent"
+                        className="w-16 h-16 mr-6 border-2 border-accent"
                     />
                 </div>
 

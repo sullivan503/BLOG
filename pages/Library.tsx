@@ -8,10 +8,18 @@ interface LibraryProps {
   posts: BlogPost[];
   isLoading: boolean;
   onNavigate: (path: string) => void;
+  initialTab?: string;
 }
 
-const Library: React.FC<LibraryProps> = ({ posts, isLoading, onNavigate }) => {
+const Library: React.FC<LibraryProps> = ({ posts, isLoading, onNavigate, initialTab }) => {
   const [activeTab, setActiveTab] = useState<'books' | 'knowledge' | 'media'>('books');
+
+  // Sync with initialTab prop
+  React.useEffect(() => {
+    if (initialTab === 'knowledge') setActiveTab('knowledge');
+    else if (initialTab === 'media') setActiveTab('media');
+    else if (initialTab === 'books') setActiveTab('books');
+  }, [initialTab]);
 
   // Filter posts based on props
   const { books, knowledge, media } = useMemo(() => {
@@ -88,7 +96,7 @@ const Library: React.FC<LibraryProps> = ({ posts, isLoading, onNavigate }) => {
 
       {/* Tabs */}
       <div className="flex justify-center mb-10">
-        <div className="inline-flex bg-surface border border-gray-200 rounded-full p-1">
+        <div className="inline-flex bg-surface border border-gray-200 p-1">
           {[
             { id: 'books', label: '书架 (Books)', icon: <Book size={16} /> },
             { id: 'knowledge', label: '知识 (Knowledge)', icon: <Brain size={16} /> },
@@ -96,8 +104,11 @@ const Library: React.FC<LibraryProps> = ({ posts, isLoading, onNavigate }) => {
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center px-5 py-2 rounded-full text-sm font-bold transition-all ${activeTab === tab.id
+              onClick={() => {
+                setActiveTab(tab.id as any);
+                onNavigate(`library/${tab.id}`);
+              }}
+              className={`flex items-center px-5 py-2 text-sm font-bold transition-all ${activeTab === tab.id
                 ? 'bg-accent text-white shadow-lg'
                 : 'text-secondary hover:text-primary'
                 }`}
@@ -155,7 +166,7 @@ const Library: React.FC<LibraryProps> = ({ posts, isLoading, onNavigate }) => {
                 <div
                   key={item.id}
                   onClick={() => onNavigate(`post/${item.slug}`)}
-                  className="group flex flex-col p-6 bg-white border border-gray-100 rounded-xl hover:shadow-lg hover:border-accent/30 cursor-pointer transition-all duration-300 relative overflow-hidden"
+                  className="group flex flex-col p-6 bg-white border border-gray-100 hover:shadow-lg hover:border-accent/30 cursor-pointer transition-all duration-300 relative overflow-hidden"
                 >
                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
 

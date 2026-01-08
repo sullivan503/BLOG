@@ -37,7 +37,7 @@ const GalleryCard: React.FC<GalleryCardProps> = ({ item, type, onClick }) => {
 
   return (
     <div
-      className={`group bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all duration-300 flex flex-col h-full ${onClick ? 'cursor-pointer' : 'cursor-default'}`}
+      className={`group bg-white border border-gray-200 overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all duration-300 flex flex-col h-full ${onClick ? 'cursor-pointer' : 'cursor-default'}`}
       onClick={onClick}
     >
 

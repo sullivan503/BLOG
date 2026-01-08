@@ -27,52 +27,88 @@ const App: React.FC = () => {
   const [isUsingWordPress, setIsUsingWordPress] = useState(false);
 
   // Handle Hash Routing
+  // Handle Path Routing (History API)
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.slice(1); // remove #
+    const handleLocationChange = () => {
+      // 1. Legacy Hash Redirector: Check if user arrived via classic hash link (e.g. /#/post/foo)
+      if (window.location.hash.startsWith('#/')) {
+        const cleanPath = window.location.hash.replace('#', '');
+        window.history.replaceState(null, '', cleanPath);
+        // The subsequent logic will pick up the new pathname
+      }
 
-      if (hash === '') {
+      const path = window.location.pathname; // e.g. "/post/hello-world" or "/about"
+
+      if (path === '/' || path === '') {
         setRoute({ path: '' });
-      } else if (hash === 'about') {
+      } else if (path === '/about') {
         setRoute({ path: 'about' });
-      } else if (hash === 'library') {
-        setRoute({ path: 'library' });
-      } else if (hash.startsWith('geek')) {
-        // Support 'geek' and 'geek/games'
-        const parts = hash.split('/');
-        setRoute({ path: 'geek', slug: parts[1] || 'tech' });
-      } else if (hash === 'essays') {
+      } else if (path.startsWith('/library')) {
+        const parts = path.split('/');
+        setRoute({ path: 'library', slug: parts[2] || 'books' });
+      } else if (path.startsWith('/geek')) {
+        // Support '/geek' and '/geek/games'
+        const parts = path.split('/');
+        // path is like "", "geek", "games" -> parts[0]="", parts[1]="geek", parts[2]="games"
+        setRoute({ path: 'geek', slug: parts[2] || 'engineering' });
+      } else if (path === '/essays') {
         setRoute({ path: 'essays' });
-      } else if (hash === 'projects') {
+      } else if (path === '/projects') {
         setRoute({ path: 'projects' });
-      } else if (hash === 'resume') {
+      } else if (path === '/resume') {
         setRoute({ path: 'resume' });
-      } else if (hash.startsWith('category/')) {
-        const slug = hash.split('/')[1];
+      } else if (path.startsWith('/category/')) {
+        const slug = path.split('/')[2];
         setRoute({ path: 'category', slug });
-      } else if (hash.startsWith('post/')) {
-        const slug = hash.split('/')[1];
+      } else if (path.startsWith('/post/')) {
+        const slug = path.split('/')[2];
         setRoute({ path: 'post', slug });
       } else {
-        // Instead of defaulting to Home, we identify it as an unknown route
+        // Unknown route -> 404
         setRoute({ path: '404' });
       }
+
+      // Scroll to top on route change
+      window.scrollTo(0, 0);
     };
 
     // Initial check
-    handleHashChange();
+    handleLocationChange();
 
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    // Listen for browser back/forward
+    window.addEventListener('popstate', handleLocationChange);
+
+    // Listen for custom navigation events (since pushState doesn't trigger listeners by default)
+    const handlePushState = () => handleLocationChange();
+    window.addEventListener('pushstate', handlePushState);
+
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('pushstate', handlePushState);
+    };
   }, []);
 
   // Fetch Data logic
+  const [widgetsData, setWidgetsData] = useState<any>(null);
+
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
         console.log(`Attempting to fetch from ${WORDPRESS_API_URL}...`);
-        const wpPosts = await fetchWordPressPosts();
+
+        // Parallel Fetching
+        const [wpPosts, stickyPosts, readingPosts, thoughtPosts, geekPosts] = await Promise.all([
+          fetchWordPressPosts(),
+          import('./services/wpService').then(m => m.fetchStickyPosts()),
+          import('./services/wpService').then(m => m.fetchPostsByTag('reading-now')),
+          import('./services/wpService').then(m => m.fetchPostsByTag('micro-thought')),
+          // Geek Widget Strategy: Try 'digital-setup' tag first, fallback to 'geek' tag
+          import('./services/wpService').then(m =>
+            m.fetchPostsByTag('digital-setup', 1)
+              .then(ds => ds.length > 0 ? ds : m.fetchPostsByTag('geek', 1))
+          )
+        ]);
 
         if (wpPosts.length > 0) {
           setPosts(wpPosts);
@@ -83,6 +119,14 @@ const App: React.FC = () => {
           setPosts(MOCK_POSTS);
           setIsUsingWordPress(false);
         }
+
+        // Set Widget Data
+        setWidgetsData({
+          featured: stickyPosts.length > 0 ? stickyPosts[0] : null,
+          reading: readingPosts.length > 0 ? readingPosts[0] : null,
+          microThought: thoughtPosts.length > 0 ? thoughtPosts[0] : null,
+          geek: geekPosts.length > 0 ? geekPosts[0] : null
+        });
 
       } catch (error) {
         console.error("Error connecting to WordPress:", error);
@@ -97,14 +141,25 @@ const App: React.FC = () => {
     loadData();
   }, []);
 
-  const navigate = (path: string) => {
-    // Robust navigation: Check if path is a recognized route OR already has a prefix
-    if (['about', 'library', 'essays', 'projects', 'resume', ''].includes(path) || path.startsWith('geek') || path.startsWith('category/') || path.startsWith('post/')) {
-      window.location.hash = path;
+  const navigate = (pathArg: string) => {
+    // Convert abstract "pathArg" (e.g. 'about', 'post/foo') into a real URL path
+    let newPath = '/';
+
+    if (pathArg === '') {
+      newPath = '/';
+    } else if (['about', 'library', 'essays', 'projects', 'resume'].includes(pathArg)) {
+      newPath = `/${pathArg}`;
+    } else if (pathArg.startsWith('geek') || pathArg.startsWith('library') || pathArg.startsWith('category/') || pathArg.startsWith('post/')) {
+      newPath = `/${pathArg}`;
     } else {
-      // assume it's a slug if it's just a plain string
-      window.location.hash = `post/${path}`;
+      // Fallback: assume it's a post slug if plain string
+      newPath = `/post/${pathArg}`;
     }
+
+    // Update URL and State
+    window.history.pushState({}, '', newPath);
+    // Dispatch custom event so our useEffect picks it up
+    window.dispatchEvent(new Event('pushstate'));
   };
 
   const getPageContent = () => {
@@ -112,7 +167,7 @@ const App: React.FC = () => {
       case 'about':
         return <About />;
       case 'library':
-        return <Library posts={posts} isLoading={isLoading} onNavigate={navigate} />;
+        return <Library posts={posts} isLoading={isLoading} onNavigate={navigate} initialTab={route.slug} />;
       case 'geek':
         return <Geek posts={posts} isLoading={isLoading} onNavigate={navigate} initialTab={route.slug} />;
       case 'essays':
@@ -142,16 +197,20 @@ const App: React.FC = () => {
           }
           else if (cats.some(c => ['tech', 'engineering', '技术', 'gear'].some(k => c.includes(k)))) {
             backPath = 'geek';
-            backLabel = 'Back to Digital Life';
+            backLabel = 'Back to Engineering';
           }
           // 3. Digital Library (Books, Media, Knowledge)
-          else if (cats.some(c => ['books', '书', 'media', '影音'].some(k => c.includes(k)))) {
-            backPath = 'library';
-            backLabel = 'Back to Library';
+          else if (cats.some(c => ['books', '书'].some(k => c.includes(k)))) {
+            backPath = 'library/books';
+            backLabel = 'Back to Books';
           }
           else if (cats.some(c => ['knowledge', '知识', 'course'].some(k => c.includes(k)))) {
-            backPath = 'library'; // Ideally navigate to tab if possible, for now Library root is safe
+            backPath = 'library/knowledge';
             backLabel = 'Back to Knowledge';
+          }
+          else if (cats.some(c => ['media', '影音'].some(k => c.includes(k)))) {
+            backPath = 'library/media';
+            backLabel = 'Back to Media';
           }
           // 4. Think & Write (Mind, Body, Wealth, Journal)
           else if (cats.some(c => ['mind', '心智', '心理'].some(k => c.includes(k)))) {
@@ -180,7 +239,7 @@ const App: React.FC = () => {
         return <NotFound onNavigate={navigate} type="page" />;
 
       case '':
-        return <Home posts={posts} onNavigate={navigate} isLoading={isLoading} isUsingWP={isUsingWordPress} />;
+        return <Home posts={posts} onNavigate={navigate} isLoading={isLoading} widgetsData={widgetsData} />;
 
       default:
         // Fallback for any unhandled state

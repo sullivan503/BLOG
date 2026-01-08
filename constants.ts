@@ -32,11 +32,17 @@ export const SOCIAL_LINKS = {
     email: "sullivan503@gmail.com",
     twitter: "https://x.com/sullivan617",
     twitterHandle: "@sullivan617",
-    github: "https://github.com/sullivan503", // 请更新为你真实的 Github 链接
+    douyin: "sullivan503",
+    douyinUrl: "https://www.douyin.com/search/sullivan503", // Best effort search link
+    douyinLogo: "/assets/images/douyin-logo.png",
+    weibo: "疯文斋",
+    weiboUrl: "https://weibo.com/u/7365526152",
+    weiboLogo: "/assets/images/weibo-logo.png",
+    github: "https://github.com/sullivan503",
     wechatOA: "疯文斋",
-    wechatOAImage: "/oa-qr.jpg",
+    wechatOAImage: "/assets/images/wechat-oa.jpg",
     wechatPersonal: "Fengwenzhai503",
-    wechatPersonalImage: "/wechat-qr.jpg"
+    wechatPersonalImage: "/assets/images/wechat-personal.jpg"
 };
 
 // ==============================================================================
@@ -59,6 +65,33 @@ export const CTA_DESCRIPTION = "如果您正在面临 Sales Ops 体系搭建、C
 export const CTA_BUTTON_TEXT = "预约咨询 (Book a Call)";
 
 export const NEWSLETTER_SUBJECT = "New Newsletter Subscriber";
+
+// ==============================================================================
+// 5. HOMEPAGE WIDGETS (Content as UI)
+// ==============================================================================
+
+export const HOMEPAGE_WIDGETS = {
+    // Row 1: Right Widget
+    reading: {
+        title: "Thinking, Fast and Slow",
+        author: "Daniel Kahneman",
+        coverUrl: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=300&h=400", // Placeholder book cover
+        comment: "A fundamental guide to understanding our own cognitive biases. Essential for investing.",
+        link: "library"
+    },
+    // Row 3: Left Widget
+    microThought: {
+        label: "Business Insight",
+        content: "True scalability isn't just about handling more traffic; it's about handling more complexity without adding proportional human effort.",
+        link: "projects" // Linked to Consulting/Projects
+    },
+    // Row 3: Right Widget
+    geek: {
+        label: "Digital Setup",
+        content: "Migrating from VS Code to Cursor has been a 10x productivity booster. AI-native coding is the future.",
+        link: "geek"
+    }
+};
 
 // ==============================================================================
 // 5. RESUME DATA

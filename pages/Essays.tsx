@@ -115,7 +115,7 @@ const Essays: React.FC<EssaysProps> = ({ posts, onNavigate, categorySlug }) => {
                     <div
                         key={post.id}
                         onClick={() => onNavigate(`post/${post.slug}`)}
-                        className="group flex flex-col p-6 bg-white border border-gray-100 rounded-xl hover:shadow-lg hover:border-accent/30 cursor-pointer transition-all duration-300 relative overflow-hidden"
+                        className="group flex flex-col p-6 bg-white border border-gray-100 hover:shadow-lg hover:border-accent/30 cursor-pointer transition-all duration-300 relative overflow-hidden"
                     >
                         {/* Decorative hover line */}
                         <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
@@ -123,7 +123,7 @@ const Essays: React.FC<EssaysProps> = ({ posts, onNavigate, categorySlug }) => {
                         <div className="flex items-center space-x-3 text-xs mb-3">
                             <span className="text-accent font-mono font-bold">{post.date}</span>
                             {post.categories?.slice(0, 1).map(c => (
-                                <span key={c} className="bg-surface border border-gray-200 px-2 py-0.5 rounded text-secondary font-bold">{c}</span>
+                                <span key={c} className="bg-surface border border-gray-200 px-2 py-0.5 text-secondary font-bold">{c}</span>
                             ))}
                             <span className="text-gray-300">|</span>
                             <span className="text-secondary flex items-center">
@@ -146,7 +146,7 @@ const Essays: React.FC<EssaysProps> = ({ posts, onNavigate, categorySlug }) => {
                     </div>
                 ))
             ) : (
-                <div className="text-center py-20 border border-dashed border-gray-200 rounded-2xl bg-surface">
+                <div className="text-center py-20 border border-dashed border-gray-200 bg-surface">
                     <BookOpen size={48} className="mx-auto text-gray-300 mb-4" />
                     <p className="text-secondary font-medium">没有找到相关文章。</p>
                     {searchQuery && !categorySlug && (
@@ -168,11 +168,11 @@ const Essays: React.FC<EssaysProps> = ({ posts, onNavigate, categorySlug }) => {
             <header className="mb-12 border-b border-gray-100 pb-8">
                 <div className="flex items-center space-x-2 mb-4">
                     {categorySlug ? (
-                        <span className="px-3 py-1 bg-accent text-white font-bold text-xs uppercase rounded-full tracking-wider">
+                        <span className="px-3 py-1 bg-accent text-white font-bold text-xs uppercase tracking-wider">
                             {categorySlug.toUpperCase()}
                         </span>
                     ) : (
-                        <span className="px-3 py-1 bg-gray-100 text-secondary font-mono text-xs uppercase rounded-full font-bold">
+                        <span className="px-3 py-1 bg-gray-100 text-secondary font-mono text-xs uppercase font-bold">
                             ESSAYS
                         </span>
                     )}
@@ -221,7 +221,7 @@ const Essays: React.FC<EssaysProps> = ({ posts, onNavigate, categorySlug }) => {
                     {/* Right Column: Sidebar (4 Cols) */}
                     <aside className="lg:col-span-4 space-y-10">
                         {/* Component 1: Search */}
-                        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm sticky top-24">
+                        <div className="bg-white p-6 border border-gray-100 shadow-sm sticky top-24">
                             <h3 className="font-bold text-primary mb-4 flex items-center">
                                 <Search size={18} className="mr-2 text-accent" />
                                 搜索 (Search)
@@ -232,7 +232,7 @@ const Essays: React.FC<EssaysProps> = ({ posts, onNavigate, categorySlug }) => {
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="输入关键词..."
-                                    className="w-full bg-surface border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
+                                    className="w-full bg-surface border border-gray-200 pl-10 pr-4 py-3 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                                 />
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                             </div>
@@ -252,13 +252,13 @@ const Essays: React.FC<EssaysProps> = ({ posts, onNavigate, categorySlug }) => {
                                     {categories.map((cat) => (
                                         <div
                                             key={cat.name}
-                                            className="group flex items-center justify-between w-full p-2 rounded-lg hover:bg-surface transition-colors cursor-pointer border-b border-gray-50 last:border-0"
+                                            className="group flex items-center justify-between w-full p-2 hover:bg-surface transition-colors cursor-pointer border-b border-gray-50 last:border-0"
                                             onClick={() => setSearchQuery(cat.name)} // Quick filter by clicking category
                                         >
                                             <span className="text-sm text-secondary group-hover:text-primary transition-colors">
                                                 {cat.name}
                                             </span>
-                                            <span className="text-xs font-mono bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full group-hover:bg-accent group-hover:text-white transition-colors">
+                                            <span className="text-xs font-mono bg-gray-100 text-gray-500 px-2 py-0.5 group-hover:bg-accent group-hover:text-white transition-colors">
                                                 {cat.count}
                                             </span>
                                         </div>
@@ -268,7 +268,7 @@ const Essays: React.FC<EssaysProps> = ({ posts, onNavigate, categorySlug }) => {
                         </div>
 
                         {/* Component 3: Quote */}
-                        <div className="bg-primary text-white p-6 rounded-xl shadow-lg relative overflow-hidden hidden lg:block">
+                        <div className="bg-primary text-white p-6 shadow-lg relative overflow-hidden hidden lg:block">
                             <div className="relative z-10">
                                 <p className="font-serif italic text-sm text-gray-300 leading-relaxed">
                                     "Writing is the process of discovering what you believe."

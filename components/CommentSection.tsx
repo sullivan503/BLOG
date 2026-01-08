@@ -55,7 +55,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, postContent }) 
       </h3>
 
       {/* Comment Form */}
-      <div className="bg-surface border border-gray-100 rounded-xl p-6 mb-12">
+      <div className="bg-surface border border-gray-100 p-6 mb-12">
         <form onSubmit={handleSubmit}>
           <div className="mb-5">
             <label className="block text-xs font-mono text-secondary mb-2 uppercase tracking-wide font-bold">Name</label>
@@ -64,37 +64,37 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, postContent }) 
               value={authorName}
               onChange={(e) => setAuthorName(e.target.value)}
               placeholder="Identify yourself"
-              className="w-full px-4 py-3 bg-white text-primary rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent placeholder-gray-400 transition-colors"
+              className="w-full px-4 py-3 bg-white text-primary border border-gray-200 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent placeholder-gray-400 transition-colors"
               required
             />
           </div>
           <div className="mb-5">
             <div className="flex justify-between items-center mb-2">
-                <label className="block text-xs font-mono text-secondary uppercase tracking-wide font-bold">Message</label>
-                <button 
-                    type="button" 
-                    onClick={handleAiSuggest}
-                    disabled={isAiLoading}
-                    className="text-xs text-accent hover:text-accentHover flex items-center disabled:opacity-50 transition-colors font-bold"
-                >
-                    {isAiLoading ? 'Thinking...' : '✨ AI Suggest'}
-                </button>
+              <label className="block text-xs font-mono text-secondary uppercase tracking-wide font-bold">Message</label>
+              <button
+                type="button"
+                onClick={handleAiSuggest}
+                disabled={isAiLoading}
+                className="text-xs text-accent hover:text-accentHover flex items-center disabled:opacity-50 transition-colors font-bold"
+              >
+                {isAiLoading ? 'Thinking...' : '✨ AI Suggest'}
+              </button>
             </div>
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="What's on your mind?"
               rows={4}
-              className="w-full px-4 py-3 bg-white text-primary rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent placeholder-gray-400 transition-colors"
+              className="w-full px-4 py-3 bg-white text-primary border border-gray-200 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent placeholder-gray-400 transition-colors"
               required
             />
           </div>
           <div className="flex justify-end">
             <button
-                type="submit"
-                className="bg-primary text-white px-6 py-2.5 rounded-lg font-bold hover:bg-black transition-colors"
+              type="submit"
+              className="bg-primary text-white px-6 py-2.5 font-bold hover:bg-black transition-colors"
             >
-                Post Comment
+              Post Comment
             </button>
           </div>
         </form>
@@ -104,17 +104,17 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, postContent }) 
       <div className="space-y-8">
         {comments.length === 0 ? (
           <div className="text-center py-8 opacity-50">
-             <p className="text-secondary italic">No signals yet. Initiate the conversation.</p>
+            <p className="text-secondary italic">No signals yet. Initiate the conversation.</p>
           </div>
         ) : (
           comments.map((comment) => (
             <div key={comment.id} className="flex space-x-4 animate-fade-in group">
               <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-surface flex items-center justify-center text-secondary border border-gray-200 font-bold">
+                <div className="w-10 h-10 bg-surface flex items-center justify-center text-secondary border border-gray-200 font-bold">
                   <User size={18} />
                 </div>
               </div>
-              <div className="flex-grow bg-white p-4 rounded-xl border border-gray-100 shadow-sm group-hover:border-gray-200 transition-colors">
+              <div className="flex-grow bg-white p-4 border border-gray-100 shadow-sm group-hover:border-gray-200 transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-bold text-primary text-sm">{comment.author}</h4>
                   <span className="text-xs text-secondary font-mono">{comment.date}</span>
