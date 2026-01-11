@@ -30,7 +30,9 @@
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "vite.config.ts",
+    "scripts"
   ],
   "references": [
     {
