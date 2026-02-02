@@ -150,26 +150,6 @@ export const fetchPostsByTag = async (tagSlug: string, limit: number = 1): Promi
   }
 };
 
-export const fetchWordPressPage = async (slug: string): Promise<BlogPost | null> => {
-  if (!WORDPRESS_API_URL) return null;
-
-  try {
-    const cacheBuster = `&_cb=${new Date().getTime()}`;
-    const response = await fetch(`${WORDPRESS_API_URL}/wp-json/wp/v2/pages?slug=${slug}&_embed${cacheBuster}`);
-    if (!response.ok) {
-      throw new Error(`WordPress API page fetch failed: ${response.status}`);
-    }
-    const data = await response.json();
-
-    if (data && data.length > 0) {
-      return formatPost(data[0]);
-    }
-    return null;
-  } catch (error) {
-    console.error(`Error fetching WordPress page '${slug}':`, error);
-    return null;
-  }
-};
 
 export interface ConsultationFormData {
   name: string;

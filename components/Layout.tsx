@@ -12,10 +12,9 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentRoute }) =
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Category Configuration
   const categories = [
-    { name: 'Mind & Growth', slug: 'category/mind', short: 'Mind' },
-    { name: 'Body Manual', slug: 'category/body', short: 'Body' },
+    { name: 'Business & Ops', slug: 'category/business', short: 'Biz' },
+    { name: 'Mind & Body', slug: 'category/mind', short: 'Mind' },
     { name: 'Wealth Strategy', slug: 'category/wealth', short: 'Wealth' },
     { name: 'Journal', slug: 'category/journal', short: 'Journal' },
   ];
@@ -36,7 +35,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentRoute }) =
         <nav className="flex justify-between items-center py-10 mb-12 md:mb-20 border-b border-border text-sm font-mono uppercase tracking-[0.1em]">
           {/* Logo */}
           <div
-            className="cursor-pointer group"
+            className="cursor-pointer group select-none"
             onClick={() => handleNav('')}
           >
             <span className="font-display font-bold text-2xl md:text-3xl text-primary group-hover:text-accent transition-colors normal-case tracking-normal">
@@ -61,17 +60,17 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentRoute }) =
               </button>
 
               {/* Dropdown Content */}
-              <div className={`absolute left-1/2 -translate-x-1/2 pt-4 w-48 transition-all duration-200 ${isDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'}`}>
-                <div className="bg-white border border-border p-2 shadow-sm">
+              <div className={`absolute left-1/2 -translate-x-1/2 pt-4 w-48 transition-all duration-200 z-50 ${isDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'}`}>
+                <div className="bg-white border border-border p-2 shadow-sm rounded-sm">
                   <div className="flex flex-col gap-1">
-                    <button onClick={() => handleNav('essays')} className="text-left px-4 py-2 text-xs font-bold text-primary hover:bg-surface hover:text-accent">
+                    <button onClick={() => handleNav('essays')} className="text-left px-4 py-2 text-xs font-bold text-primary hover:bg-surface hover:text-accent w-full">
                       All Articles
                     </button>
                     {categories.map((cat) => (
                       <button
                         key={cat.slug}
                         onClick={(e) => { e.stopPropagation(); handleNav(cat.slug); }}
-                        className="text-left px-4 py-2 text-xs font-serif italic normal-case text-secondary hover:text-accent transition-colors"
+                        className="text-left px-4 py-2 text-xs font-serif italic normal-case text-secondary hover:text-accent transition-colors w-full"
                       >
                         {cat.name}
                       </button>
@@ -81,10 +80,10 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentRoute }) =
               </div>
             </div>
 
-            <button onClick={() => handleNav('library')} className={currentRoute === 'library' ? 'text-accent' : 'text-secondary hover:text-accent'}>Library</button>
-            <button onClick={() => handleNav('geek')} className={currentRoute === 'geek' ? 'text-accent' : 'text-secondary hover:text-accent'}>Digital Life</button>
-            <button onClick={() => handleNav('projects')} className={currentRoute === 'projects' ? 'text-accent' : 'text-secondary hover:text-accent'}>Consulting</button>
-            <button onClick={() => handleNav('about')} className={currentRoute === 'about' ? 'text-accent' : 'text-secondary hover:text-accent'}>About</button>
+            <button onClick={() => handleNav('services')} className={`transition-colors duration-200 ${currentRoute === 'services' ? 'text-accent font-bold' : 'text-secondary hover:text-accent'}`}>Services</button>
+            <button onClick={() => handleNav('library')} className={`transition-colors duration-200 ${currentRoute === 'library' ? 'text-accent' : 'text-secondary hover:text-accent'}`}>Library</button>
+            <button onClick={() => handleNav('geek')} className={`transition-colors duration-200 ${currentRoute === 'geek' ? 'text-accent' : 'text-secondary hover:text-accent'}`}>Digital Life</button>
+            <button onClick={() => handleNav('about')} className={`transition-colors duration-200 ${currentRoute === 'about' ? 'text-accent' : 'text-secondary hover:text-accent'}`}>About</button>
 
             {/* Separator */}
             <div className="w-px h-4 bg-gray-200 ml-2"></div>
@@ -118,14 +117,15 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentRoute }) =
           <div className="md:hidden mb-10 border-b border-border pb-8 animate-fade-in font-mono uppercase tracking-widest text-sm space-y-6">
             <div className="space-y-4">
               <div className="text-xs text-gray-400 font-bold mb-2">Navigation</div>
-              <button onClick={() => handleNav('essays')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case">Essays</button>
+              <button onClick={() => handleNav('essays')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case w-full text-left">Essays</button>
               {categories.map((cat) => (
-                <button key={cat.slug} onClick={() => handleNav(cat.slug)} className="block text-sm text-secondary pl-4 hover:text-accent normal-case font-serif italic">• {cat.name}</button>
+                <button key={cat.slug} onClick={() => handleNav(cat.slug)} className="block text-sm text-secondary pl-4 hover:text-accent normal-case font-serif italic w-full text-left">• {cat.name}</button>
               ))}
-              <button onClick={() => handleNav('library')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case">Library</button>
-              <button onClick={() => handleNav('geek')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case">Digital Life</button>
-              <button onClick={() => handleNav('projects')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case">Consulting</button>
-              <button onClick={() => handleNav('about')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case">About</button>
+              <div className="h-px bg-gray-100 my-2 w-10"></div>
+              <button onClick={() => handleNav('services')} className="block text-xl font-serif text-accent font-bold hover:italic transition-all normal-case w-full text-left">Services</button>
+              <button onClick={() => handleNav('library')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case w-full text-left">Library</button>
+              <button onClick={() => handleNav('geek')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case w-full text-left">Digital Life</button>
+              <button onClick={() => handleNav('about')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case w-full text-left">About</button>
             </div>
           </div>
         )}

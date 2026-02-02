@@ -112,11 +112,25 @@ const About: React.FC = () => {
                 </div>
 
                 <div className="border-l-2 border-gray-100 ml-3 space-y-8 pl-8 py-2">
-                    {/* v2.1: 智慧与心流 */}
+                    {/* v2.2: 工程与秩序 */}
                     <div className="relative">
                         <div className="absolute -left-[39px] top-1.5 w-4 h-4 bg-accent border-4 border-white shadow-sm"></div>
                         <div>
-                            <span className="font-mono text-xs text-accent font-bold mb-1 block">2026.01 - Present</span>
+                            <span className="font-mono text-xs text-accent font-bold mb-1 block">2026.02</span>
+                            <h3 className="font-bold text-primary text-lg mb-2">v2.2: 工程与秩序 (Engineering & Order)</h3>
+                            <p className="text-secondary text-sm leading-relaxed">
+                                重构 <strong className="text-red-500">Services</strong> 商业板块，确立了以“白底直角 + 红色高亮”为核心的 <strong className="text-red-500">Engineering</strong> 视觉语言。
+                                <br />
+                                拆分出 Audit、Build、Partner 独立服务漏斗。全站完成“Headless Content”架构改造，实现文案与代码的深度解耦与秩序化。
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* v2.1: 智慧与心流 */}
+                    <div className="relative">
+                        <div className="absolute -left-[39px] top-1.5 w-4 h-4 bg-gray-200 border-4 border-white"></div>
+                        <div>
+                            <span className="font-mono text-xs text-gray-400 font-bold mb-1 block">2026.01</span>
                             <h3 className="font-bold text-primary text-lg mb-2">v2.1: 智慧与心流 (Intelligence & Flow)</h3>
                             <p className="text-secondary text-sm leading-relaxed">
                                 全站完成首页设计、核心功能及内容板块的重构，并接入 <strong className="text-red-500">Cloudflare</strong> 与 <strong className="text-red-500">Google Analytics</strong>。

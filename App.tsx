@@ -8,6 +8,10 @@ import Library from './pages/Library';
 import Geek from './pages/Geek';
 import Essays from './pages/Essays';
 import Projects from './pages/Projects';
+import Services from './pages/Services';
+import ServiceAudit from './pages/ServiceAudit';
+import ServiceBuild from './pages/ServiceBuild';
+import ServicePartner from './pages/ServicePartner';
 import Resume from './pages/Resume';
 import NotFound from './components/NotFound'; // Import NotFound
 import { WORDPRESS_API_URL, MOCK_POSTS } from './constants';
@@ -16,7 +20,7 @@ import { fetchWordPressPosts } from './services/wpService';
 
 // Simple Router State
 type Route = {
-  path: string; // '', 'about', 'post', 'library', 'geek', 'essays', 'projects', 'category', 'resume'
+  path: string; // '', 'about', 'post', 'library', 'geek', 'essays', 'projects', 'services', 'category', 'resume'
   slug?: string;
 };
 
@@ -55,6 +59,11 @@ const App: React.FC = () => {
         setRoute({ path: 'essays' });
       } else if (path === '/projects') {
         setRoute({ path: 'projects' });
+      } else if (path === '/services') {
+        setRoute({ path: 'services' });
+      } else if (path.startsWith('/services/')) {
+        const slug = path.split('/')[2];
+        setRoute({ path: 'services', slug });
       } else if (path === '/resume') {
         setRoute({ path: 'resume' });
       } else if (path.startsWith('/category/')) {
@@ -147,7 +156,7 @@ const App: React.FC = () => {
 
     if (pathArg === '') {
       newPath = '/';
-    } else if (['about', 'library', 'essays', 'projects', 'resume'].includes(pathArg)) {
+    } else if (['about', 'library', 'essays', 'projects', 'services', 'resume'].includes(pathArg)) {
       newPath = `/${pathArg}`;
     } else if (pathArg.startsWith('geek') || pathArg.startsWith('library') || pathArg.startsWith('category/') || pathArg.startsWith('post/')) {
       newPath = `/${pathArg}`;
@@ -176,6 +185,11 @@ const App: React.FC = () => {
         return <Essays posts={posts} onNavigate={navigate} categorySlug={route.slug} />;
       case 'projects':
         return <Projects />;
+      case 'services':
+        if (route.slug === 'audit') return <ServiceAudit />;
+        if (route.slug === 'build') return <ServiceBuild />;
+        if (route.slug === 'partner') return <ServicePartner />;
+        return <Services />;
       case 'post':
         let post = posts.find(p => p.slug === route.slug);
         if (isLoading) return <div className="text-center py-20 animate-pulse text-secondary">Loading content...</div>;
@@ -189,6 +203,10 @@ const App: React.FC = () => {
           if (cats.some(c => ['business', '商业', 'projects', '项目', 'achievements', '成果'].some(k => c.includes(k)))) {
             backPath = 'projects';
             backLabel = 'Back to Business';
+          }
+          else if (cats.some(c => ['ops', '运营', 'strategy', '战略'].some(k => c.includes(k)))) {
+            backPath = 'category/business';
+            backLabel = 'Back to Business & Ops';
           }
           // 2. Geek & Digital Life
           else if (cats.some(c => ['games', '游戏'].some(k => c.includes(k)))) {

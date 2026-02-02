@@ -14,8 +14,9 @@ const Essays: React.FC<EssaysProps> = ({ posts, onNavigate, categorySlug }) => {
 
     const categoryMap: Record<string, string[]> = {
         'business': ['商业与运营', 'Business', '商业', '运营'],
-        'mind': ['心智与成长', 'Mind', '心智', '心理', 'Self'],
-        'body': ['身体使用手册', 'Body', 'Life', '健康', 'Body & Life'],
+        // Merged 'Mind' and 'Body' keywords into one category view
+        'mind': ['心智与成长', 'Mind', '心智', '心理', 'Self', '身体使用手册', 'Body', 'Life', '健康', 'Body & Life'],
+        'body': ['身体使用手册', 'Body', 'Life', '健康', 'Body & Life'], // Kept for backward compatibility if accessed directly
         'wealth': ['财富与策略', 'Wealth', '投资', 'Strategy'],
         'journal': ['随笔', 'Journal', '生活与随笔', '生活', 'Daily', 'Notes', 'Uncategorized', '未分类']
     };
@@ -23,7 +24,7 @@ const Essays: React.FC<EssaysProps> = ({ posts, onNavigate, categorySlug }) => {
     const getCategoryTitle = (slug: string) => {
         switch (slug) {
             case 'business': return '商业与运营';
-            case 'mind': return '心智与成长';
+            case 'mind': return '心智与身体 (Mind & Body)'; // Updated Title
             case 'body': return '身体使用手册';
             case 'wealth': return '财富与策略';
             case 'journal': return '随笔';
@@ -33,10 +34,10 @@ const Essays: React.FC<EssaysProps> = ({ posts, onNavigate, categorySlug }) => {
 
     const getCategoryDesc = (slug: string) => {
         switch (slug) {
-            case 'business': return 'B2B 销售方法论与企业管理咨询';
-            case 'mind': return '焦虑自救、自我认知与心理学研究';
+            case 'business': return '用工程思维解构商业挑战。从 B2B 销售方法论到数字化转型，关于增长的实战复盘。';
+            case 'mind': return '在无序的世界中重建内在秩序。从焦虑自救到 Body Bio-hacking，用传统智慧与科学锚定身心。';
             case 'body': return '中医视角、亲密关系与精力管理';
-            case 'wealth': return '投资笔记与经济周期观察';
+            case 'wealth': return '在纷繁复杂的经济波动中，寻找确定性的价值。关于复利、周期与资产配置的思考。';
             case 'journal': return '日常碎片、灵感记录与未归档的思考';
             default: return '商业、心智、身体与财富的复利笔记。';
         }
@@ -180,7 +181,8 @@ const Essays: React.FC<EssaysProps> = ({ posts, onNavigate, categorySlug }) => {
                 <h1 className="font-serif text-4xl font-bold text-primary mb-4">
                     {categorySlug ? getCategoryTitle(categorySlug) : "思考与文章"}
                 </h1>
-                <p className="text-xl text-secondary max-w-2xl leading-relaxed">
+                {/* Fixed Max-Width here from max-w-2xl to max-w-4xl */}
+                <p className="text-xl text-secondary max-w-4xl leading-relaxed">
                     {categorySlug ? getCategoryDesc(categorySlug) : "这里汇集了我所有的长文思考。在无序的世界里寻找秩序。"}
                 </p>
             </header>

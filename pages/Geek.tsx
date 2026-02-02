@@ -239,7 +239,7 @@ const Geek: React.FC<GeekProps> = ({ posts, isLoading, onNavigate, initialTab })
                             key={tab.id}
                             onClick={() => handleTabChange(tab.id as any)}
                             className={`flex items-center px-5 py-2 text-sm font-bold transition-all ${activeTab === tab.id
-                                ? 'bg-primary text-white shadow-lg'
+                                ? 'bg-accent text-white shadow-lg'
                                 : 'text-secondary hover:text-primary'
                                 }`}
                         >
