@@ -3,7 +3,11 @@ import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
 import { ArrowRight, Cpu, Zap, Layers, GitMerge } from 'lucide-react';
 
-const ServiceBuild: React.FC = () => {
+interface ServicePageProps {
+    onNavigate: (page: string) => void;
+}
+
+const ServiceBuild: React.FC<ServicePageProps> = ({ onNavigate }) => {
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
@@ -16,16 +20,22 @@ const ServiceBuild: React.FC = () => {
             />
 
             {/* 1. HERO - Dark Theme for "The Build" to match its premium status */}
-            <section className="bg-primary text-white pt-32 pb-20 px-6 border-b border-gray-800">
-                <div className="max-w-4xl mx-auto">
-                    <div className="inline-block bg-accent text-white px-3 py-1 text-xs font-bold font-mono uppercase tracking-widest mb-6">
+            <section className="bg-primary text-white pt-0 pb-20 px-6 border-b border-gray-800">
+                <div className="max-w-4xl mx-auto pt-10">
+                    <button
+                        onClick={() => onNavigate('services')}
+                        className="mb-8 text-accent font-mono font-bold text-sm border-b-2 border-red-900 hover:border-accent pb-0.5 transition-colors uppercase tracking-widest"
+                    >
+                        ← Back to Service Menu
+                    </button>
+                    <div className="inline-block bg-accent text-white px-3 py-1 text-xs font-bold font-mono uppercase tracking-widest mb-6 block w-fit">
                         Service_02: The Build
                     </div>
-                    <h1 className="font-display font-bold text-5xl md:text-7xl mb-8 leading-tight">
+                    <h1 className="font-display font-bold text-[2.5rem] md:text-[3.8rem] leading-[1.1] mb-8">
                         Automate the Boring.<br />
                         <span className="text-gray-500">Close the Deal.</span>
                     </h1>
-                    <p className="font-serif text-xl md:text-2xl text-gray-400 leading-relaxed max-w-2xl border-l-4 border-accent pl-6">
+                    <p className="font-serif font-light text-[1.2rem] md:text-[1.35rem] text-gray-400 leading-relaxed max-w-2xl border-l-4 border-accent pl-6">
                         别让你的精英销售把时间浪费在填表格上。<br />
                         我们构建 AI Agent，让数据录入、线索清洗和外呼跟进自动发生。
                     </p>

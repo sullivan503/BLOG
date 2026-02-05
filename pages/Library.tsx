@@ -90,6 +90,9 @@ const Library: React.FC<LibraryProps> = ({ posts, isLoading, onNavigate, initial
       <header className="text-center mb-8">
         <h1 className="font-serif text-4xl font-bold text-primary mb-4">数字书房</h1>
         <p className="text-secondary max-w-xl mx-auto">
+          <span className="font-mono text-accent font-bold">&lt;Knowledge_Base /&gt;</span> &
+          <span className="font-mono text-accent font-bold"> Media_Diet</span>
+          <br />
           我的知识输入系统。
         </p>
       </header>

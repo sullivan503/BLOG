@@ -45,6 +45,12 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentRoute }) =
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
+            <button
+              onClick={() => handleNav('')}
+              className={`transition-colors duration-200 flex items-center gap-1 ${currentRoute === '' ? 'text-accent' : 'text-secondary hover:text-accent'}`}
+            >
+              Home
+            </button>
 
             {/* Essays Dropdown */}
             <div
@@ -113,22 +119,24 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentRoute }) =
         </nav>
 
         {/* Mobile Menu Overlay */}
-        {isMenuOpen && (
-          <div className="md:hidden mb-10 border-b border-border pb-8 animate-fade-in font-mono uppercase tracking-widest text-sm space-y-6">
-            <div className="space-y-4">
-              <div className="text-xs text-gray-400 font-bold mb-2">Navigation</div>
-              <button onClick={() => handleNav('essays')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case w-full text-left">Essays</button>
-              {categories.map((cat) => (
-                <button key={cat.slug} onClick={() => handleNav(cat.slug)} className="block text-sm text-secondary pl-4 hover:text-accent normal-case font-serif italic w-full text-left">• {cat.name}</button>
-              ))}
-              <div className="h-px bg-gray-100 my-2 w-10"></div>
-              <button onClick={() => handleNav('services')} className="block text-xl font-serif text-accent font-bold hover:italic transition-all normal-case w-full text-left">Services</button>
-              <button onClick={() => handleNav('library')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case w-full text-left">Library</button>
-              <button onClick={() => handleNav('geek')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case w-full text-left">Digital Life</button>
-              <button onClick={() => handleNav('about')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case w-full text-left">About</button>
+        {
+          isMenuOpen && (
+            <div className="md:hidden mb-10 border-b border-border pb-8 animate-fade-in font-mono uppercase tracking-widest text-sm space-y-6">
+              <div className="space-y-4">
+                <div className="text-xs text-gray-400 font-bold mb-2">Navigation</div>
+                <button onClick={() => handleNav('essays')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case w-full text-left">Essays</button>
+                {categories.map((cat) => (
+                  <button key={cat.slug} onClick={() => handleNav(cat.slug)} className="block text-sm text-secondary pl-4 hover:text-accent normal-case font-serif italic w-full text-left">• {cat.name}</button>
+                ))}
+                <div className="h-px bg-gray-100 my-2 w-10"></div>
+                <button onClick={() => handleNav('services')} className="block text-xl font-serif text-accent font-bold hover:italic transition-all normal-case w-full text-left">Services</button>
+                <button onClick={() => handleNav('library')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case w-full text-left">Library</button>
+                <button onClick={() => handleNav('geek')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case w-full text-left">Digital Life</button>
+                <button onClick={() => handleNav('about')} className="block text-xl font-serif text-primary hover:text-accent hover:italic transition-all normal-case w-full text-left">About</button>
+              </div>
             </div>
-          </div>
-        )}
+          )
+        }
 
         {/* Main Content */}
         <main className="w-full pb-20">
@@ -147,8 +155,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentRoute }) =
           </div>
         </footer>
 
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

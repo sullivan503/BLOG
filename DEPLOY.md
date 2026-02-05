@@ -1,63 +1,71 @@
-# 🌿 疯文斋：可视化部署通关手册 (Final Edition)
+# 🌿 疯文斋：自动化部署原理手册 (Automated CI/CD)
+
+> **现在的部署方式**：全自动。你只需要负责写代码，剩下的交给机器人。
 
 ---
 
-## 🏁 基础设施与环境 - [DONE ✅]
-- [x] VPS (Debian 12) + 宝塔面板
-- [x] LNMP (Nginx + PHP + MySQL)
-- [x] WordPress 一键部署
+## 🛠 核心原理 (The "Magic")
 
----
+这是一套标准的 **CI/CD (持续集成/持续部署)** 流程。
+简单来说，我们雇佣了 GitHub 当我们的“搬运工”。
 
-## 🎨 域名与加密 - [DONE ✅]
-- [x] DNS A记录解析 (Namecheap)
-- [x] SSL 证书申请 (Let's Encrypt)
-- [x] 强制 HTTPS 开启
-
----
-
-## 🚀 最终发布：如何让 React 接管网站
-
-### 1. 本地打包 (Local Build)
-在开发环境执行：
-```bash
-npm run build
+### 流程图解
+```mermaid
+graph LR
+    A[本地电脑 (Local)] -- 1. git push --> B[GitHub 仓库 (Remote)]
+    B -- 2. 触发信号 --> C[GitHub Actions (云端流水线)]
+    subgraph "GitHub Actions 自动作业"
+        C1[安装 Node.js]
+        C2[npm run build (打包生成的 dist)]
+        C3[SSH 连接 VPS]
+    end
+    C --> C1 --> C2 --> C3
+    C3 -- 3. SCP 上传文件的 --> D[宝塔 VPS (Server)]
+    D --> E[用户访问 (Live)]
 ```
-这会生成一个 `dist` 文件夹，这是你网站的“实体”。
-
-### 2. 服务器文件替换 (File Management)
-通过宝塔“文件”管理器进入网站根目录：
-1.  **备份/更名**：将原有的 `index.php` 重命名为 `index_backup.php`。
-2.  **上传**：将 `dist` 目录下的所有内容（`index.html` 和 `assets` 文件夹）上传到根目录。
-3.  **保留**：保留 `wp-admin`, `wp-content`, `wp-includes` 等文件夹，它们是后台管理系统。
-
-### 3. Nginx 优先级微调 (Critical!)
-在宝塔“网站设置” -> “配置文件”中修改：
-```nginx
-# 找到这一行，把 index.html 挪到最前面
-index index.html index.php;
-```
-这样服务器就会优先读取我们的 React 前端。
-
-### 4. 伪静态设置 (SPA Routing)
-在宝塔“网站设置” -> “伪静态”中，**清空**原有内容，添加以下代码：
-```nginx
-location / {
-    try_files $uri $uri/ /index.html;
-}
-# 保留后台访问
-location /wp-admin/ {
-    try_files $uri $uri/ /index.php?$args;
-}
-```
-*这能确保你在点击“关于我”或“文章详情”后刷新页面不会报 404 错误。*
 
 ---
 
-### 🎊 验收环节
-访问 `https://fengwz.me`：
-- 看到 React 界面？ **OK!**
-- 看到 SSL 小锁？ **OK!**
-- 访问 `https://fengwz.me/wp-admin` 还能登录写文章？ **OK!**
+## 📝 详细步骤拆解
 
-**恭喜！你的 Headless 个人网站正式上线！**
+### 1. 本地 (Local)
+我们在 VS Code 里修改代码。
+- **动作**：`git push`
+- **作用**：把代码推送到 GitHub 的 `main` 主分支。这就是发令枪。
+
+### 2. GitHub (Middleman)
+GitHub 收到代码后，会检查 `.github/workflows/deploy.yml` 这个文件。
+- **配置**：它发现我们写了“只要 main 分支有变动，就干活”。
+
+### 3. GitHub Actions (The Worker)
+GitHub 会临时启动一台 Linux 虚拟机（Runner），按顺序执行以下命令：
+1.  **Checkout**: 把你的代码拉下来。
+2.  **Install**: `npm install` 安装依赖。
+3.  **Build**: `npm run build`。这一步会把我们的 React 代码编译成浏览器能看懂的 HTML/CSS/JS，放在 `dist` 文件夹里。
+4.  **Deploy**: 使用 `appleboy/scp-action` 插件。
+    - 它读取仓库设置里的 **Secrets** (密码/IP)。
+    - 远程连接你的 VPS。
+    - 把 `dist` 文件夹里的所有东西，**覆盖**上传到 VPS 的 `/www/wwwroot/www.fengwz.me` 目录。
+
+### 4. VPS (The Host)
+服务器其实什么都没做，只是被动接收了新文件。
+- Nginx 发现文件变了，下次用户刷新页面时，就会加载新的内容。
+
+---
+
+## 🔑 关键配置 (Secrets)
+为了让 GitHub 能连上你的 VPS，我们在 GitHub 仓库的 `Settings -> Secrets` 里配置了这些“钥匙”：
+- `HOST`: 你的 VPS IP 地址
+- `USERNAME`: 登录用户名 (e.g., root)
+- `PASSWORD`: 登录密码
+- `VITE_GEMINI_API_KEY`: 也就是在那边打包时需要的 API Key
+
+---
+
+## 🚀 总结
+**以后更新网站只需要三步：**
+1. 改代码。
+2. `git add .` + `git commit -m "更新内容"`
+3. `git push`
+
+**然后喝口水，等 1 分钟，网站就自动更新了。**

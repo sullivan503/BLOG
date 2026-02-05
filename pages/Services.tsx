@@ -24,7 +24,7 @@ const Services: React.FC = () => {
             y: 0,
             opacity: 1,
             transition: {
-                type: "spring",
+                type: "spring" as const,
                 stiffness: 100
             }
         }
@@ -56,7 +56,7 @@ const Services: React.FC = () => {
                     </motion.h1>
 
                     <motion.p variants={itemVariants} className="font-serif font-light text-[1.2rem] md:text-[1.35rem] text-secondary leading-relaxed relative pl-6 border-l-4 border-accent mb-10">
-                        我利用 <span className="text-primary font-bold border-b-2 border-accent/20">AI Agent</span> 和 <span className="text-primary font-bold border-b-2 border-accent/20">RevOps (营收运营)</span> 的最佳实践，<br className="hidden md:block" />帮助 B2B 科技公司构建自动化的、数据驱动的营收引擎。
+                        我利用 <span className="font-medium border-b-2 border-accent/20">AI Agent</span> 和 <span className="font-medium border-b-2 border-accent/20">RevOps (营收运营)</span> 的最佳实践，<br className="hidden md:block" />帮助 B2B 科技公司构建自动化的、数据驱动的营收引擎。
                     </motion.p>
 
                     <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4">
@@ -220,15 +220,15 @@ const ServiceCard = ({ icon, title, subtitle, target, description, outcome, link
         <div className="space-y-6 flex-grow">
             <div>
                 <h4 className={`text-xs font-bold uppercase tracking-wider mb-2 ${highlighter ? 'text-red-100/70' : 'text-gray-400'}`}>For Who</h4>
-                <p className={`text-sm leading-relaxed ${highlighter ? 'text-white' : 'text-secondary'}`}>{target}</p>
+                <p className={`text-base leading-relaxed ${highlighter ? 'text-white' : 'text-secondary'}`}>{target}</p>
             </div>
             <div>
                 <h4 className={`text-xs font-bold uppercase tracking-wider mb-2 ${highlighter ? 'text-red-100/70' : 'text-gray-400'}`}>What I Do</h4>
-                <p className={`text-sm leading-relaxed ${highlighter ? 'text-white' : 'text-secondary'}`}>{description}</p>
+                <p className={`text-base leading-relaxed ${highlighter ? 'text-white' : 'text-secondary'}`}>{description}</p>
             </div>
             <div>
                 <h4 className={`text-xs font-bold uppercase tracking-wider mb-2 ${highlighter ? 'text-red-100/70' : 'text-gray-400'}`}>Outcome</h4>
-                <p className={`text-sm leading-relaxed font-medium ${highlighter ? 'text-white' : 'text-primary'}`}>{outcome}</p>
+                <p className={`text-base leading-relaxed font-medium ${highlighter ? 'text-white' : 'text-primary'}`}>{outcome}</p>
             </div>
         </div>
 
@@ -247,7 +247,7 @@ const CaseStat = ({ stat, label, desc }: any) => (
             {stat}
         </div>
         <div className="text-xl font-bold text-primary mb-3">{label}</div>
-        <div className="text-secondary leading-relaxed max-w-sm">
+        <div className="text-lg text-secondary leading-relaxed max-w-sm">
             {desc}
         </div>
     </div>

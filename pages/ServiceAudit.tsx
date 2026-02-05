@@ -3,7 +3,11 @@ import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
 import { ArrowRight, CheckSquare, AlertTriangle, FileText, Search, Activity } from 'lucide-react';
 
-const ServiceAudit: React.FC = () => {
+interface ServicePageProps {
+    onNavigate: (page: string) => void;
+}
+
+const ServiceAudit: React.FC<ServicePageProps> = ({ onNavigate }) => {
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
@@ -16,16 +20,22 @@ const ServiceAudit: React.FC = () => {
             />
 
             {/* 1. HERO */}
-            <section className="pt-32 pb-20 px-6 border-b border-gray-100">
-                <div className="max-w-4xl mx-auto">
-                    <div className="inline-block bg-accent/10 text-accent px-3 py-1 text-xs font-bold font-mono uppercase tracking-widest mb-6 border border-accent/20">
+            <section className="pt-0 pb-20 px-6 border-b border-gray-100">
+                <div className="max-w-4xl mx-auto pt-10">
+                    <button
+                        onClick={() => onNavigate('services')}
+                        className="mb-8 text-accent font-mono font-bold text-sm border-b-2 border-red-100 hover:border-accent pb-0.5 transition-colors uppercase tracking-widest"
+                    >
+                        ← Back to Service Menu
+                    </button>
+                    <div className="inline-block bg-accent/10 text-accent px-3 py-1 text-xs font-bold font-mono uppercase tracking-widest mb-6 border border-accent/20 block w-fit">
                         Service_01: The Diagnosis
                     </div>
-                    <h1 className="font-display font-bold text-5xl md:text-7xl mb-8 leading-tight text-primary">
+                    <h1 className="font-display font-bold text-[2.5rem] md:text-[3.8rem] leading-[1.1] mb-8 text-primary">
                         Stop Guessing.<br />
                         <span className="text-accent">Start Knowing.</span>
                     </h1>
-                    <p className="font-serif text-xl md:text-2xl text-secondary leading-relaxed max-w-2xl border-l-4 border-accent pl-6">
+                    <p className="font-serif font-light text-[1.2rem] md:text-[1.35rem] text-secondary leading-relaxed max-w-2xl border-l-4 border-accent pl-6">
                         你的 CRM 数据是否一团糟？你的销售预测是否总是靠猜？<br />
                         "The Audit" 是一次对你营收引擎的全面核磁共振。
                     </p>

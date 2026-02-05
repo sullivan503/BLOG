@@ -186,9 +186,9 @@ const App: React.FC = () => {
       case 'projects':
         return <Projects />;
       case 'services':
-        if (route.slug === 'audit') return <ServiceAudit />;
-        if (route.slug === 'build') return <ServiceBuild />;
-        if (route.slug === 'partner') return <ServicePartner />;
+        if (route.slug === 'audit') return <ServiceAudit onNavigate={navigate} />;
+        if (route.slug === 'build') return <ServiceBuild onNavigate={navigate} />;
+        if (route.slug === 'partner') return <ServicePartner onNavigate={navigate} />;
         return <Services />;
       case 'post':
         let post = posts.find(p => p.slug === route.slug);
